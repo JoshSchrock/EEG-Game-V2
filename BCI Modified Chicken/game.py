@@ -13,7 +13,7 @@ class Game:
         self.eegInterfaces = eegInterfaces
         self.frame_rate = frame_rate
         self.starttime = time.time()
-        self.velocity = 5
+        self.velocity = 1
         self.mode = 0
 
         self.settup()
@@ -29,6 +29,13 @@ class Game:
         self.display = str(time.time() - self.starttime)
 
     def simulate(self):
+        w, h = pygame.display.get_surface().get_size()
+        if self.player.y <= h / 2 + 100 or self.enemy.y >= h / 2 - 100:
+            if not self.player.choicestart:
+                self.player.choicestart = pygame.time.get_ticks() / 1000
+                self.enemy.choicestart = pygame.time.get_ticks() / 1000
+            self.player.make_choice(0)
+            self.enemy.make_choice(0)
         self.player.move()
         self.enemy.move()
 
@@ -36,14 +43,15 @@ class Game:
         pass
 
     def run_one_cycle(self):
+        events = EventHandler(self)
         if self.mode == 0:
-            if time.time() - self.starttime >= 5:
+            if time.time() - self.starttime >= 1:
                 self.starttime = time.time()
                 self.mode = 1
             else:
                 self.planning_time()
         if self.mode == 1:
-            if time.time() - self.starttime >= 5:
+            if time.time() - self.starttime >= 1:
                 self.starttime = time.time()
                 self.mode = 2
             else:
@@ -52,6 +60,7 @@ class Game:
             if time.time() - self.starttime >= 5:
                 self.starttime = time.time()
                 self.mode = 0
+                self.settup()
             else:
                 self.simulate()
 
