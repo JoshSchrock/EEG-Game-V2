@@ -49,8 +49,8 @@ class Game:
             if time.time() - self.starttime >= 1:
                 self.starttime = time.time()
                 self.mode = 1
-                self.player1.list_of_inputs = []
-                self.player2.list_of_inputs = []
+                self.player1.go_to_measure()
+                self.player2.go_to_measure()
             else:
                 self.planning_time()
         if self.mode == 1:
@@ -59,6 +59,8 @@ class Game:
                 self.mode = 2
                 self.p1choice = self.player1.determine_direction()
                 self.p2choice = self.player2.determine_direction()
+                self.player1.go_to_sim()
+                self.player2.go_to_sim()
             else:
                 self.direction_selection()
         if self.mode == 2:

@@ -15,16 +15,16 @@ class Car:
         self.explosion_group = pygame.sprite.Group()
         self.explosion_sound = pygame.mixer.Sound("Explosion.mp3")
         self.is_dead = False
+        var = pygame.PixelArray(self.car)
+        var.replace((242, 173, 18), self.color)
+        var.close()
+        del var
 
         if player == 0:
             self.x = initpos[0]
             self.y = initpos[1] - 100
             self.direction = (0, -1)
         else:
-            var = pygame.PixelArray(self.car)
-            var.replace((242, 173, 18), pygame.color.Color('blue'))
-            var.close()
-            del var
             self.x = initpos[0]
             self.y = 100
             self.direction = (0, 1)

@@ -12,6 +12,14 @@ class Player:
     def settup(self, initpos):
         self.player = Car(pygame.color.Color('blue'), 0, self.velocity, initpos)
         self.enemy = Car(pygame.color.Color('red'), 1, self.velocity, initpos)
+        self.eegInterface.add_control_marker(1)
+
+    def go_to_measure(self):
+        self.list_of_inputs = []
+        self.eegInterface.add_control_marker(2)
+
+    def go_to_sim(self):
+        self.eegInterface.add_control_marker(3)
 
     def simulate(self, urchoice, thrchoice):
         w, h = pygame.display.get_surface().get_size()
@@ -47,3 +55,4 @@ class Player:
     def draw(self, screen):
         self.player.draw(screen)
         self.enemy.draw(screen)
+
