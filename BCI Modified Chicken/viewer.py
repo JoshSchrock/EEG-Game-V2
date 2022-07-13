@@ -9,21 +9,37 @@ class Viewer:
     def update(self):
         self.screen.fill(pygame.color.Color('forestgreen'))
         pygame.draw.rect(self.screen, pygame.color.Color('grey'),
-                         ((self.screen.get_width() / 2) - 300, 0, 600, self.screen.get_height()))
+                         ((self.screen.get_width() / 4) - 150, 0, 300, self.screen.get_height()))
         pygame.draw.rect(self.screen, pygame.color.Color('yellow'),
-                         ((self.screen.get_width() / 2) - 305, 0, 10, self.screen.get_height()))
+                         ((self.screen.get_width() / 4) - 152, 0, 4, self.screen.get_height()))
         pygame.draw.rect(self.screen, pygame.color.Color('yellow'),
-                         ((self.screen.get_width() / 2) - 105, 0, 10, self.screen.get_height()))
+                         ((self.screen.get_width() / 4) - 52, 0, 4, self.screen.get_height()))
         pygame.draw.rect(self.screen, pygame.color.Color('yellow'),
-                         ((self.screen.get_width() / 2) + 95, 0, 10, self.screen.get_height()))
+                         ((self.screen.get_width() / 4) + 48, 0, 4, self.screen.get_height()))
         pygame.draw.rect(self.screen, pygame.color.Color('yellow'),
-                         ((self.screen.get_width() / 2) + 295, 0, 10, self.screen.get_height()))
-        # draw pursuer
-        self.game.player.draw(self.screen)
-        self.game.enemy.draw(self.screen)
+                         ((self.screen.get_width() / 4) + 148, 0, 4, self.screen.get_height()))
+        pygame.draw.rect(self.screen, pygame.color.Color('grey'),
+                         (((3* self.screen.get_width()) / 4) - 150, 0, 300, self.screen.get_height()))
+        pygame.draw.rect(self.screen, pygame.color.Color('yellow'),
+                         (((3* self.screen.get_width()) / 4) - 152, 0, 4, self.screen.get_height()))
+        pygame.draw.rect(self.screen, pygame.color.Color('yellow'),
+                         (((3* self.screen.get_width()) / 4) - 52, 0, 4, self.screen.get_height()))
+        pygame.draw.rect(self.screen, pygame.color.Color('yellow'),
+                         (((3* self.screen.get_width()) / 4) + 48, 0, 4, self.screen.get_height()))
+        pygame.draw.rect(self.screen, pygame.color.Color('yellow'),
+                         (((3* self.screen.get_width()) / 4) + 148, 0, 4, self.screen.get_height()))
 
-        img = self.font.render(self.game.display, True, pygame.color.Color('red'))
-        self.screen.blit(img, (self.screen.get_width()/2, self.screen.get_height()/2))
+        plyr1 = self.font.render('Player 1', True, pygame.color.Color('blue'))
+        self.screen.blit(plyr1, (50, 50))
+
+        plyr2 = self.font.render('Player 2', True, pygame.color.Color('red'))
+        self.screen.blit(plyr2, (self.screen.get_width() - 50 - plyr2.get_width(), 50))
+
+        # draw pursuer
+        self.game.draw(self.screen)
+
+        img = self.font.render(self.game.display, True, pygame.color.Color('black'))
+        self.screen.blit(img, (self.screen.get_width()/2 - img.get_width() / 2, 50))
 
 
 

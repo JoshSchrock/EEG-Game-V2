@@ -9,7 +9,7 @@ def main():
     pygame.init()
     pygame.display.set_caption("Modified Chicken")  # title on top of game window
 
-    screen = pygame.display.set_mode((1200, 1000))  # DONE: Choose your own size
+    screen1 = pygame.display.set_mode((1200, 1000), pygame.RESIZABLE)  # DONE: Choose your own size
     clock = pygame.time.Clock()
     frame_rate = 120  # game and display rate
 
@@ -36,8 +36,8 @@ def main():
     eegInterface2 = EEGInterface(your_app_client_id, your_app_client_secret, your_app_license, record_export_folder,
                                  record_export_format, record_export_version, headset_2, profile_name_2)
 
-    game = Game([eegInterface1], frame_rate)  # Methods of game operation
-    viewer = Viewer(screen, game)  # display the game
+    game = Game([eegInterface1, eegInterface2], frame_rate)  # Methods of game operation
+    viewer = Viewer(screen1, game)  # display the game
 
     while True:
         clock.tick(frame_rate)
