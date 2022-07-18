@@ -1,0 +1,208 @@
+{
+    "Markers": [
+        {
+            "endDatetime": "2022-06-21T14:54:07.479818-04:00",
+            "extras": {
+            },
+            "index": 1,
+            "label": "Control:_EPOCFLEX-F0000172_1",
+            "originalEndDatetime": "2022-06-21T14:54:07.482218-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:06.235101-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:06.231972-04:00",
+            "type": "interval",
+            "uuid": "8542b18e-6697-4b84-88ec-948cc9663033",
+            "value": 3
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:06.774589-04:00",
+            "extras": {
+            },
+            "index": 2,
+            "label": "Game:_1",
+            "originalEndDatetime": "2022-06-21T14:54:06.771109-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:06.771109-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:06.774589-04:00",
+            "type": "instance",
+            "uuid": "fe3c4226-9697-433e-b615-ebbe70f5c005",
+            "value": 1
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:09.599126-04:00",
+            "extras": {
+            },
+            "index": 3,
+            "label": "Control:_EPOCFLEX-F0000172_2",
+            "originalEndDatetime": "2022-06-21T14:54:09.599163-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:09.233620-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:09.231430-04:00",
+            "type": "interval",
+            "uuid": "b72f0a0d-adbb-4dca-a846-45db779f72b7",
+            "value": 3
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:13.590977-04:00",
+            "extras": {
+            },
+            "index": 4,
+            "label": "Control:_EPOCFLEX-F0000172_3",
+            "originalEndDatetime": "2022-06-21T14:54:13.588275-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:11.984002-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:11.981733-04:00",
+            "type": "interval",
+            "uuid": "18fbb1d6-f13a-4b8b-bacb-8fcc81b2ce6e",
+            "value": 2
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:12.903879-04:00",
+            "extras": {
+            },
+            "index": 5,
+            "label": "Game:_2",
+            "originalEndDatetime": "2022-06-21T14:54:12.900312-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:12.900312-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:12.903879-04:00",
+            "type": "instance",
+            "uuid": "17b26cc5-3153-487d-85d6-1a5a1dc40df7",
+            "value": 1
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:19.351453-04:00",
+            "extras": {
+            },
+            "index": 6,
+            "label": "Control:_EPOCFLEX-F0000172_4",
+            "originalEndDatetime": "2022-06-21T14:54:19.350564-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:18.102713-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:18.101871-04:00",
+            "type": "interval",
+            "uuid": "3cabc3a9-3835-42de-8467-1714acb5fa9a",
+            "value": 3
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:18.225992-04:00",
+            "extras": {
+            },
+            "index": 7,
+            "label": "Game:_3",
+            "originalEndDatetime": "2022-06-21T14:54:18.228442-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:18.228442-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:18.225992-04:00",
+            "type": "instance",
+            "uuid": "ee05774b-7583-4b67-9355-aa8c97a1758a",
+            "value": 1
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:21.615911-04:00",
+            "extras": {
+            },
+            "index": 8,
+            "label": "Control:_EPOCFLEX-F0000172_5",
+            "originalEndDatetime": "2022-06-21T14:54:21.613827-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:20.863085-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:20.861616-04:00",
+            "type": "interval",
+            "uuid": "aeaf587e-0919-4145-898e-e5b2079df5ee",
+            "value": 3
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:23.231935-04:00",
+            "extras": {
+            },
+            "index": 9,
+            "label": "Control:_EPOCFLEX-F0000172_6",
+            "originalEndDatetime": "2022-06-21T14:54:23.235544-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:22.630163-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:22.628903-04:00",
+            "type": "interval",
+            "uuid": "68678e8f-53a6-4385-bfe2-d51b7fe97fe9",
+            "value": 3
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:23.888668-04:00",
+            "extras": {
+            },
+            "index": 10,
+            "label": "Game:_4",
+            "originalEndDatetime": "2022-06-21T14:54:23.886782-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:23.886782-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:23.888668-04:00",
+            "type": "instance",
+            "uuid": "dc8aaa51-ba9a-4ccb-b17d-45065968beac",
+            "value": 1
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:27.562207-04:00",
+            "extras": {
+            },
+            "index": 11,
+            "label": "Control:_EPOCFLEX-F0000172_7",
+            "originalEndDatetime": "2022-06-21T14:54:27.563819-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:25.212818-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:25.212966-04:00",
+            "type": "interval",
+            "uuid": "81991634-4f70-441d-8a6d-526dae4e499b",
+            "value": 2
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:30.425958-04:00",
+            "extras": {
+            },
+            "index": 12,
+            "label": "Game:_5",
+            "originalEndDatetime": "2022-06-21T14:54:30.423781-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:30.423781-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:30.425958-04:00",
+            "type": "instance",
+            "uuid": "4488ce9a-03c3-49a2-90f2-690820ccffad",
+            "value": 1
+        },
+        {
+            "endDatetime": "2022-06-21T14:54:36.827570-04:00",
+            "extras": {
+            },
+            "index": 13,
+            "label": "Control:_EPOCFLEX-F0000172_8",
+            "originalEndDatetime": "2022-06-21T14:54:36.826033-04:00",
+            "originalStartDatetime": "2022-06-21T14:54:36.445373-04:00",
+            "port": "EEG-Game",
+            "startDatetime": "2022-06-21T14:54:36.444805-04:00",
+            "type": "interval",
+            "uuid": "90294a69-be68-4f7f-b7e1-9ffe04244a24",
+            "value": 3
+        }
+    ],
+    "exportApp": "com.larxpsychopass.larx-lab-applications",
+    "exportTime": "2022-06-21T14:54:42.895-04:00",
+    "mappings": {
+        "CMS": "TP9",
+        "DRL": "TP10",
+        "LB": "T7",
+        "LD": "FC5",
+        "LF": "F3",
+        "LG": "F7",
+        "LH": "AF3",
+        "LL": "O1",
+        "LO": "P7",
+        "RB": "T8",
+        "RD": "FC6",
+        "RF": "F4",
+        "RG": "F8",
+        "RH": "AF4",
+        "RL": "O2",
+        "RO": "P8"
+    },
+    "recordId": "bbfcbbc7-867a-4c27-bf9c-ae2c79487049",
+    "user": "larxpsychopass"
+}
