@@ -33,6 +33,8 @@ class Game:
 
     def direction_selection(self):
         self.display = str(round(time.time() - self.starttime, 1))
+        self.player1.update_slider()
+        self.player2.update_slider()
 
     def simulate(self):
         self.player1.simulate(self.p1choice, self.p2choice)
@@ -54,7 +56,7 @@ class Game:
             else:
                 self.planning_time()
         if self.mode == 1:
-            if time.time() - self.starttime >= 1:
+            if time.time() - self.starttime >= 3:
                 self.starttime = time.time()
                 self.mode = 2
                 self.p1choice = self.player1.determine_direction()
@@ -72,9 +74,10 @@ class Game:
                 self.simulate()
 
 
-    def draw(self, screen):
-        self.player1.draw(screen)
-        self.player2.draw(screen)
+    def draw(self, screen, size):
+        width, height = size
+        self.player1.draw(screen, ((width/2) - 260, 150), (10, 150))
+        self.player2.draw(screen, (width - 260, 150), ((width / 2) + 10, 150))
 
 
 

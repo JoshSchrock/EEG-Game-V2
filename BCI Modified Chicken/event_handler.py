@@ -36,25 +36,26 @@ class EventHandler:
 
     # controls given to pursuer
     def EEGController(self):
-        action = self.player.eegInterface.streamLineData()[0]
-        power = self.player.eegInterface.streamLineData()[1]
-        # left
-        if action == "left":
-            self.player.list_of_inputs.append(0)
-            if self.last_marker != 'left':
-                self.player.eegInterface.add_control_marker(10)
-                self.last_marker = 'left'
-        # right
-        if action == "right":
-            self.player.list_of_inputs.append(2)
-            if self.last_marker != 'right':
-                self.player.eegInterface.add_control_marker(30)
-                self.last_marker = 'right'
-        if action == 'neutral':
-            self.player.list_of_inputs.append(1)
-            if self.last_marker != 'neutral':
-                self.player.eegInterface.end_control_marker()
-                self.last_marker = 'neutral'
+        if self.player.eegInterface.streamLineData():
+            action = self.player.eegInterface.streamLineData()[0]
+            power = self.player.eegInterface.streamLineData()[1]
+            # left
+            if action == "left":
+                self.player.list_of_inputs.append(0)
+                if self.last_marker != 'left':
+                    self.player.eegInterface.add_control_marker(10)
+                    self.last_marker = 'left'
+            # right
+            if action == "right":
+                self.player.list_of_inputs.append(2)
+                if self.last_marker != 'right':
+                    self.player.eegInterface.add_control_marker(30)
+                    self.last_marker = 'right'
+            if action == 'neutral':
+                self.player.list_of_inputs.append(1)
+                if self.last_marker != 'neutral':
+                    self.player.eegInterface.end_control_marker()
+                    self.last_marker = 'neutral'
 
 
     @staticmethod

@@ -37,7 +37,6 @@ class EEGInterface:
         if output:
             # determines / executes action
             return output['action'], output['power']
-        return 'neutral', 0
 
     def createRecording(self):
         record_path = f"EEG-Game_{self.profile_name}_{self.headset_id}"

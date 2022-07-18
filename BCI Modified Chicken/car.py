@@ -65,7 +65,7 @@ class Car:
             self.explode()
 
     def explode(self):
-        self.explosion_sound.play()
+        # self.explosion_sound.play()
         self.is_dead = True
         self.explosion_group.add(Explosion(self.x, self.y))
 
