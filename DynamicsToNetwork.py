@@ -8,7 +8,7 @@ import scipy.signal as sig
 
 class Dynamicstonetwork:
     def __init__(self, matrix):
-        self.matrix = matrix
+        self.matrix = matrix.tolist()
         self.threshold = np.nanquantile(self.matrix, 0.8)
 
     def draw_networks(self):
@@ -65,7 +65,7 @@ class Dynamicstonetwork:
                     if matrix[i][j] > self.threshold:
                         G.add_edges_from(edge)
                         nx.draw_networkx_edges(G, pos=pos, edgelist=edge,
-                                               width=min(10, (10000 ** (matrix[i][j] - self.threshold))), edge_color='grey')
+                                               width=min(10, (1000 ** (matrix[i][j] - self.threshold))), edge_color='grey')
 
         # hot nodes
         color_map = []
@@ -102,7 +102,7 @@ class Dynamicstonetwork:
 
         frames = []
 
-        for i in range(self.matrix.shape[2]):
+        for i in range(len(self.matrix)):
             file = f'{new_dir}\\Chuncks\\chunck_{str(i)}.png'
             newFrame = Image.open(file)
             frames.append(newFrame)
