@@ -14,85 +14,98 @@ from pydmd import FbDMD
 import scipy.integrate
 
 class Datatodynamics:
-    def __init__(self, dataset1, dataset2, t0, t1, samplefreq=128):
-        self.rawdataset1 = dataset1[:, (t0*samplefreq):(t1*samplefreq)]
-        self.rawdataset2 = dataset2[:, (t0*samplefreq):(t1*samplefreq)]
+    def __init__(self, dataset1, dataset2, s0, s1, samplefreq=128, aug=True):
+        self.aug = aug
+        self.X1 = dataset1[:, (s0):(s1)]
+        self.X2 = dataset2[:, (s0):(s1)]
+        self.samplefreq = samplefreq
 
-        prepd1 = self.prepare_matrix(self.rawdataset1)
-        prepd2 = self.prepare_matrix(self.rawdataset2)
+        self.Xc = self.combine_data(self.X1, self.X2)
 
-        self.X = self.combine_data(prepd1, prepd2)
+        if self.aug:
+            self.Xaug = self.prepare_matrix(self.Xc)
+        else:
+            self.Xaug = self.Xc
 
-        self.A, self.reconstruction, self.prediction = self.DMD(self.X, -1)
+        self.Xaugp = self.Xaug[:, 1:]
+        self.Xaug = self.Xaug[:, :-1]
+
 
     def prepare_matrix(self, X):
         # Set up DMD - reference https://www.sciencedirect.com/science/article/pii/S0165027015003829
 
-        print(X.shape)
-        self.h = (2 * X.shape[1]) // X.shape[0]
+        h = ((2 * X.shape[1]) // X.shape[0]) + 1
         length = X.shape[1] - h
         Xaug = X[:, 0:length]
         for k in range(1, h):
             Xaug = np.concatenate((Xaug, X[:, k:length + k]), axis=0)
-        print(Xaug.shape)
         return Xaug
 
     def combine_data(self, X1, X2):
         return np.concatenate((X1, X2), axis=0)
 
-    def DMD(self, X, svd=-1):
-        self.dmd = DMD(svd_rank=svd)
-        self.dmd.fit(X)
-        prediction = (self.dmd.predict(self.dmd.reconstructed_data))
-        A = numpy.matmul(prediction, np.linalg.pinv(self.dmd.reconstructed_data))
-        return A, self.dmd.reconstructed_data, prediction
+    def DMD(self, energy=False, plot=False, aspect=1):
+        # compute SVD
+        U, s, Vh = np.linalg.svd(self.Xaug, full_matrices=False)
+        # find Atilde using the SVD and Xaugp
+        Atilde = np.linalg.multi_dot([U.conj().T, self.Xaugp, Vh.conj().T]) * np.reciprocal(s)
+        print(Atilde.shape)
+        # scale Atilde to scale by energy
+        if energy:
+            Ahat = np.linalg.multi_dot([np.diag(np.power(s, -.5)), Atilde, np.diag(np.power(s, .5))])
+        else:
+            Ahat = Atilde
+        print(Ahat.shape)
+        # find eigenvalues and eigenvectors
+        self._eigenvalues, self._eigenvectors = np.linalg.eig(Ahat)
+        print(self._eigenvalues.shape, self._eigenvectors.shape)
+        # find modes
+        self._modes = (self.Xaugp.dot(Vh.conj().T) * np.reciprocal(s)).dot(self._eigenvectors)
 
-    def DMDalt(self, X):
-        Xn = X[:, 0:(X.shape[1]-1)]
-        Xp = X[:, 1:X.shape[1]]
-        A = numpy.matmul(Xp, np.linalg.pinv(Xn))
-        reconstruction = np.concatenate((Xn[:, 0], numpy.matmul(A, Xn)), axis=1)
-        Xr = np.concatenate((Xp[:, 0], numpy.matmul(A, Xp)), axis=1)
-        return A, reconstruction, Xr
+        if plot:
+            self.plot(np.absolute(self._modes), aspect=aspect, figsize=(20, 16), title='DMD Mode Heatmap (Mag)',
+                      cmap='YlOrBr', halfticks=None)
+            self.plot(np.angle(self._modes), aspect=aspect, figsize=(20, 16), title='DMD Mode Heatmap (Ang)',
+                      cmap='hsv', halfticks=None)
 
-    def construct_connectivity(self):
-        half = self.prediction.shape[0] / 2
-        full = self.prediction.shape[0]
-        Xold = np.concatenate(
-            (self.reconstruction[(half - self.rawdataset1.shape[0]):half, self.reconstruction.shape[1]],
-             self.reconstruction[(full - self.rawdataset1.shape[0]):full, self.reconstruction.shape[1]]), axis=0)
-        Xnew = np.concatenate(
-            (self.prediction[(half - self.rawdataset1.shape[0]):half, self.prediction.shape[1]],
-             self.prediction[(full - self.rawdataset1.shape[0]):full, self.prediction.shape[1]]), axis=0)
-        A = numpy.matmul(Xnew, np.linalg.pinv(Xold))
-        return A
+            self.plot(np.absolute(np.diag(self._eigenvalues)), aspect=aspect, figsize=(20, 16), title='DMD Eigenvalue Heatmap (Mag)',
+                      cmap='YlOrBr', halfticks=None)
+            self.plot(np.angle(np.diag(self._eigenvalues)), aspect=aspect, figsize=(20, 16), title='DMD Eigenvalue Heatmap (Ang)',
+                      cmap='hsv', halfticks=None)
 
 
-    def plot(self):
-        color_lims = np.percentile(self.A.real, [5, 95])
-        f = plt.figure(figsize=(20, 16))
-        plt.matshow(self.A.real.tolist(), fignum=f.number, clim=color_lims)
-        ax = plt.gca()
-        # Major ticks
-        ax.set_xticks(np.arange(-.5, self.A.shape[1] - .5, self.A.shape[1]/2))
-        ax.set_yticks(np.arange(-.5, self.A.shape[0] - .5, self.A.shape[0]/2))
+    def reconstruct(self, plot=False, aspect=1):
+        z = np.linalg.lstsq(self._modes, self.Xaug[:, 0], rcond=None,)[0]
+        reconstruction = self._modes.dot(z)
+        for i in range(1, self.Xaugp.shape[1]):
+            reconstruction = np.column_stack((reconstruction, self._modes.dot(np.power(np.diag(self._eigenvalues), i)).dot(z)))
+
+        if plot:
+            color_lims = np.percentile(self.Xaugp, [5, 95])
+            self.plot(self.Xaugp, aspect=aspect, figsize=(20, 16), title='Original Xaug\'', halfticks=None, clim=color_lims)
+            self.plot(reconstruction.real, aspect=aspect, figsize=(20, 16), title='DMD Reconstruction', halfticks=None, clim=color_lims)
+            self.plot(reconstruction.real - self.Xaugp.real, aspect=aspect, figsize=(20, 16), title='Error', halfticks=None, clim=color_lims)
+
+        return reconstruction
+
+    def DMDalt(self, plot=False, aspect=1):
+        self.A = numpy.matmul(self.Xaugp, np.linalg.pinv(self.Xaug))
+
+        if plot:
+            self.plot(np.absolute(self.A), aspect=aspect, figsize=(20, 16), title='A Matrix (Mag)', halfticks=True, cmap='YlOrBr')
+            self.plot(np.angle(self.A), aspect=aspect, figsize=(20, 16), title='A Matrix (Ang)', halfticks=True, cmap='hsv')
+
+    def plot(self, matrix, aspect=1, figsize=(20, 16), title='', cmap='inferno', halfticks=None, clim=()):
+        color_lims = np.percentile(matrix, [5, 95])
+        if len(clim) > 0:
+            color_lims = clim
+        f = plt.figure(figsize=figsize)
+        plt.matshow(matrix.tolist(), fignum=f.number, clim=color_lims, cmap=cmap, aspect=aspect)
+        if halfticks:
+            # Major ticks
+            ax = plt.gca()
+            ax.set_xticks(np.arange(-.5, matrix.shape[1] - .5, matrix.shape[1] / 2))
+            ax.set_yticks(np.arange(-.5, matrix.shape[0] - .5, matrix.shape[0] / 2))
         cb = plt.colorbar()
         cb.ax.tick_params(labelsize=14)
-        plt.title('Correlation matrix')
-
-        fig, axs = plt.subplots(3, figsize=(18, 16))
-        fig.suptitle('X, Xhat, and error')
-        color_lims = np.percentile(self.X, [5, 95])
-        f = axs[0].matshow(self.X.tolist(), clim=color_lims, aspect=.1)
-        cb = fig.colorbar(f, ax=axs[0])
-        cb.ax.tick_params(labelsize=14)
-        matrix = np.array(self.reconstruction.real)
-        f = axs[1].matshow(matrix.tolist(), clim=color_lims, aspect=.1)
-        cb = fig.colorbar(f, ax=axs[1])
-        cb.ax.tick_params(labelsize=14)
-        diff = self.X - matrix
-        f = axs[2].matshow(diff.tolist(), clim=color_lims, aspect=.1)
-        cb = fig.colorbar(f, ax=axs[2])
-        cb.ax.tick_params(labelsize=14)
-        # self.dmd.plot_eigs(show_axes=True, show_unit_circle=True, figsize=(8, 8))
-
+        plt.title(title)
