@@ -20,18 +20,18 @@ class EventHandler:
         pressed_keys = pygame.key.get_pressed()
 
         if self.control == 0:
-            if pressed_keys[pygame.K_LEFT]:
-                self.player.list_of_inputs.append(0)
-            if pressed_keys[pygame.K_DOWN]:
-                self.player.list_of_inputs.append(1)
-            if pressed_keys[pygame.K_RIGHT]:
-                self.player.list_of_inputs.append(2)
-        else:
             if pressed_keys[pygame.K_a]:
                 self.player.list_of_inputs.append(0)
             if pressed_keys[pygame.K_s]:
                 self.player.list_of_inputs.append(1)
             if pressed_keys[pygame.K_d]:
+                self.player.list_of_inputs.append(2)
+        else:
+            if pressed_keys[pygame.K_LEFT]:
+                self.player.list_of_inputs.append(0)
+            if pressed_keys[pygame.K_DOWN]:
+                self.player.list_of_inputs.append(1)
+            if pressed_keys[pygame.K_RIGHT]:
                 self.player.list_of_inputs.append(2)
 
         for event in events:
