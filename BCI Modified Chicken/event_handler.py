@@ -46,7 +46,6 @@ class EventHandler:
     def EEGController(self):
         if not self.player.eegInterface:
             if self.player.random:
-                print(self.player.random)
                 self.player.list_of_inputs.append(self.player.random)
         else:
             if self.player.eegInterface.streamLineData():
@@ -67,7 +66,7 @@ class EventHandler:
                 if action == 'neutral':
                     self.player.list_of_inputs.append(1)
                     if self.last_marker != 'neutral':
-                        self.player.eegInterface.end_control_marker(11)
+                        self.player.eegInterface.end_control_marker()
                         self.last_marker = 'neutral'
 
 
