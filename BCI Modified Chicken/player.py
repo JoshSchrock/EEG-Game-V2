@@ -4,6 +4,7 @@ from event_handler import EventHandler
 from scoreboard import Scoreboard
 from slider import Slider
 from lives import Lives
+import random
 
 class Player:
     def __init__(self, eegInterface, velocity, control):
@@ -17,11 +18,11 @@ class Player:
         self.slider = Slider()
         self.lives = Lives(3, pygame.color.Color('blue'), 100, 100)
         self.sub_life = False
+        self.random = None
 
     def settup(self, initpos):
         self.player = Car(pygame.color.Color('blue'), 0, self.velocity, initpos)
         self.enemy = Car(pygame.color.Color('red'), 1, self.velocity, initpos)
-        self.eegInterface.add_control_marker(1)
         self.slider.reset()
         if self.score_to_add:
             self.scoreboard.score += self.score_to_add
@@ -32,15 +33,20 @@ class Player:
             if self.lives.lives == 0:
                 self.lives = Lives(3, pygame.color.Color('blue'), 100, 100)
                 self.scoreboard.score = 0
-        self.eegInterface.add_control_marker(self.scoreboard.score + 100)
-        self.eegInterface.add_control_marker(self.lives.lives + 20)
+        if self.eegInterface:
+            self.eegInterface.add_control_marker(1)
+            self.eegInterface.add_control_marker(self.scoreboard.score + 100)
+            self.eegInterface.add_control_marker(self.lives.lives + 20)
 
     def go_to_measure(self):
+        self.random = random.randint(0, 6) / 3
         self.list_of_inputs = []
-        self.eegInterface.add_control_marker(2)
+        if self.eegInterface:
+            self.eegInterface.add_control_marker(2)
 
     def go_to_sim(self):
-        self.eegInterface.add_control_marker(3)
+        if self.eegInterface:
+            self.eegInterface.add_control_marker(3)
 
     def simulate(self, urchoice, thrchoice):
         w, h = pygame.display.get_surface().get_size()

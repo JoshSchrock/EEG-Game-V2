@@ -36,7 +36,7 @@ def main():
     eegInterface2 = EEGInterface(your_app_client_id, your_app_client_secret, your_app_license, record_export_folder,
                                  record_export_format, record_export_version, headset_2, profile_name_2)
 
-    game = Game([eegInterface1, eegInterface2], frame_rate)  # Methods of game operation
+    game = Game([eegInterface1, None], frame_rate)  # Methods of game operation
     viewer = Viewer(screen1, game)  # display the game
 
     while True:

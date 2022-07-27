@@ -44,7 +44,6 @@ class EEGInterface:
         self.liveAdvance.create_record(record_path, description=record_description)
         self.record = True
 
-
     def endRecording(self):
         self.liveAdvance.record_export_folder = self.record_export_folder
         self.liveAdvance.record_export_format = self.record_export_format
