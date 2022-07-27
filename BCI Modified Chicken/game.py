@@ -16,8 +16,8 @@ class Game:
         self.starttime = time.time()
         self.velocity = 1
         self.mode = 0
-        self.player1 = Player(eegInterfaces[0], self.velocity)
-        self.player2 = Player(eegInterfaces[1], self.velocity)
+        self.player1 = Player(eegInterfaces[0], self.velocity, 0)
+        self.player2 = Player(eegInterfaces[1], self.velocity, 1)
         self.p1choice = None
         self.p2choice = None
 

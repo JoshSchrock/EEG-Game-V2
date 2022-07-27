@@ -6,9 +6,9 @@ from slider import Slider
 from lives import Lives
 
 class Player:
-    def __init__(self, eegInterface, velocity):
+    def __init__(self, eegInterface, velocity, control):
         self.eegInterface = eegInterface
-        self.eventhandler = EventHandler(self)
+        self.eventhandler = EventHandler(self, control)
         self.velocity = velocity
         self.list_of_inputs = []
         self.scoreboard = Scoreboard()

@@ -2,9 +2,10 @@ import pygame
 import sys
 
 class EventHandler:
-    def __init__(self, player):
+    def __init__(self, player, control):
         self.player = player
         self.last_marker = None
+        self.control = control
 
     def get_and_handle_events(self):
         self.ManualController()
@@ -18,12 +19,20 @@ class EventHandler:
 
         pressed_keys = pygame.key.get_pressed()
 
-        if pressed_keys[pygame.K_LEFT]:
-            self.player.list_of_inputs.append(0)
-        if pressed_keys[pygame.K_DOWN]:
-            self.player.list_of_inputs.append(1)
-        if pressed_keys[pygame.K_RIGHT]:
-            self.player.list_of_inputs.append(2)
+        if self.control == 0:
+            if pressed_keys[pygame.K_LEFT]:
+                self.player.list_of_inputs.append(0)
+            if pressed_keys[pygame.K_DOWN]:
+                self.player.list_of_inputs.append(1)
+            if pressed_keys[pygame.K_RIGHT]:
+                self.player.list_of_inputs.append(2)
+        else:
+            if pressed_keys[pygame.K_a]:
+                self.player.list_of_inputs.append(0)
+            if pressed_keys[pygame.K_s]:
+                self.player.list_of_inputs.append(1)
+            if pressed_keys[pygame.K_d]:
+                self.player.list_of_inputs.append(2)
 
         for event in events:
             if event.type == pygame.KEYDOWN:
