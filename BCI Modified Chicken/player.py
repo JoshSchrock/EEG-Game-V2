@@ -3,6 +3,7 @@ import pygame
 from event_handler import EventHandler
 from scoreboard import Scoreboard
 from slider import Slider
+from lives import Lives
 
 class Player:
     def __init__(self, eegInterface, velocity):
@@ -14,6 +15,8 @@ class Player:
         self.score_to_add = None
         self.direction = None
         self.slider = Slider()
+        self.lives = Lives(3, pygame.color.Color('blue'), 100, 100)
+        self.sub_life = False
 
     def settup(self, initpos):
         self.player = Car(pygame.color.Color('blue'), 0, self.velocity, initpos)
@@ -24,6 +27,13 @@ class Player:
             self.scoreboard.score += self.score_to_add
         if self.direction:
             self.scoreboard.moves.append(self.direction)
+        if self.sub_life:
+            self.lives.lives -= 1
+            if self.lives.lives == 0:
+                self.lives = Lives(3, pygame.color.Color('blue'), 100, 100)
+                self.scoreboard.score = 0
+        self.eegInterface.add_control_marker(self.scoreboard.score + 100)
+        self.eegInterface.add_control_marker(self.lives.lives + 20)
 
     def go_to_measure(self):
         self.list_of_inputs = []
@@ -44,8 +54,10 @@ class Player:
         if (urchoice + thrchoice) / 2 == 1:
             collision = True
             self.score_to_add = -25
+            self.sub_life = True
         else:
             collision = False
+            self.sub_life = False
             if urchoice == 1:
                 self.score_to_add = 5
             else:
@@ -84,9 +96,10 @@ class Player:
             avg = sum(self.list_of_inputs) / len(self.list_of_inputs)
             self.slider.update(avg)
 
-    def draw(self, screen, scoreboard, slider):
+    def draw(self, screen, scoreboard, slider, lives):
         self.player.draw(screen)
         self.enemy.draw(screen)
         self.slider.draw(screen, slider)
         self.scoreboard.draw(screen, scoreboard)
+        self.lives.draw(screen, lives)
 

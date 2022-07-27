@@ -49,12 +49,12 @@ class EventHandler:
             if action == "right":
                 self.player.list_of_inputs.append(2)
                 if self.last_marker != 'right':
-                    self.player.eegInterface.add_control_marker(30)
+                    self.player.eegInterface.add_control_marker(12)
                     self.last_marker = 'right'
             if action == 'neutral':
                 self.player.list_of_inputs.append(1)
                 if self.last_marker != 'neutral':
-                    self.player.eegInterface.end_control_marker()
+                    self.player.eegInterface.end_control_marker(11)
                     self.last_marker = 'neutral'
 
 

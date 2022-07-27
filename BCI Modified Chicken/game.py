@@ -48,7 +48,7 @@ class Game:
         self.player2.handle_events()
 
         if self.mode == 0:
-            if time.time() - self.starttime >= 1:
+            if time.time() - self.starttime >= 3:
                 self.starttime = time.time()
                 self.mode = 1
                 self.player1.go_to_measure()
@@ -56,7 +56,7 @@ class Game:
             else:
                 self.planning_time()
         if self.mode == 1:
-            if time.time() - self.starttime >= 3:
+            if time.time() - self.starttime >= 5:
                 self.starttime = time.time()
                 self.mode = 2
                 self.p1choice = self.player1.determine_direction()
@@ -76,8 +76,8 @@ class Game:
 
     def draw(self, screen, size):
         width, height = size
-        self.player1.draw(screen, ((width/2) - 260, 150), (10, 150))
-        self.player2.draw(screen, (width - 260, 150), ((width / 2) + 10, 150))
+        self.player1.draw(screen, ((width/2) - 260, 150), (10, 150), (0, 250))
+        self.player2.draw(screen, (width - 260, 150), ((width / 2) + 10, 150), ((width / 2), 250))
 
 
 
