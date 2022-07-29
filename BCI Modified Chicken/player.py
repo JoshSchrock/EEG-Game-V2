@@ -5,6 +5,7 @@ from scoreboard import Scoreboard
 from slider import Slider
 from lives import Lives
 import random
+import time
 
 class Player:
     def __init__(self, eegInterface, velocity, control):
@@ -35,18 +36,23 @@ class Player:
                 self.scoreboard.score = 0
         if self.eegInterface:
             self.eegInterface.add_control_marker(1)
+            time.sleep(0.1)
             self.eegInterface.add_control_marker(self.scoreboard.score + 100)
+            time.sleep(0.1)
             self.eegInterface.add_control_marker(self.lives.lives + 20)
+            time.sleep(0.1)
 
     def go_to_measure(self):
         self.random = random.randint(0, 6) / 3
         self.list_of_inputs = []
         if self.eegInterface:
             self.eegInterface.add_control_marker(2)
+            time.sleep(0.1)
 
     def go_to_sim(self):
         if self.eegInterface:
             self.eegInterface.add_control_marker(3)
+            time.sleep(0.1)
 
     def simulate(self, urchoice, thrchoice):
         w, h = pygame.display.get_surface().get_size()
