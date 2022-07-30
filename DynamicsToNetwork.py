@@ -9,10 +9,11 @@ import cv2
 
 class Dynamicstonetwork:
     def __init__(self, matrix, stim1, stim2):
-        self.matrix = matrix.tolist()
+        self.threshold = np.nanquantile(matrix, 0.90)
+        self.matrix = matrix
         self.stim1 = stim1
         self.stim2 = stim2
-        self.threshold = np.nanquantile(self.matrix, 0.85)
+
 
         self.actiondict = {1: 'Planning',
                       2: 'Measuring',
@@ -94,9 +95,9 @@ class Dynamicstonetwork:
         self.action2 = None
         self.score1 = None
         self.score2 = None
-        for index, matrix in enumerate(self.matrix):
+        for index in range(self.matrix.shape[0]):
             self.get_data(index)
-            self.create_network(index, matrix,
+            self.create_network(index, self.matrix[index],
                                 [self.mode1, self.mode2],
                                 [self.lives1, self.lives2],
                                 [self.action1, self.action2],
@@ -104,26 +105,32 @@ class Dynamicstonetwork:
 
     def create_network(self, index, matrix, modes, lives, actions, scores):
         # plot------------------------------
-        fig, ax = plt.subplots(figsize=(16, 9), squeeze=False)
+        fig = plt.figure(figsize=(16, 9))
+        ax = plt.axes()
 
         for i in range(2):
             skew = 8 * i
-            xy_center = [skew + 2, 2]
+            xy_center = (skew + 4, 3)
             radius = 2
 
             # left ear
-            circle = patches.Ellipse(xy=[skew + 0, 2], width=0.4, height=1.0, angle=0, edgecolor="k", facecolor="w", zorder=0)
+            circle = patches.Ellipse((skew + 2, 3), width=0.6, height=1.0, angle=0, edgecolor="k", facecolor="w", zorder=0)
             ax.add_patch(circle)
             # right ear
-            circle = patches.Ellipse(xy=[skew + 4, 2], width=0.4, height=1.0, angle=0, edgecolor="k", facecolor="w", zorder=0)
+            circle = patches.Ellipse((skew + 6, 3), width=0.6, height=1.0, angle=0, edgecolor="k", facecolor="w", zorder=0)
             ax.add_patch(circle)
             # nose
-            xy = [[skew + 1.6, 3.6], [skew + 2, 4.3], [skew + 2.4, 3.6]]
+            xy = [[skew + 3.6, 4.6], [skew + 4, 5.3], [skew + 4.4, 4.6]]
             polygon = patches.Polygon(xy=xy, edgecolor="k", facecolor="w", zorder=0)
             ax.add_patch(polygon)
             # head
-            circle = patches.Circle(xy=xy_center, radius=radius, edgecolor="k", facecolor="w", zorder=0)
-            ax.add_patch(circle)
+            head = patches.Circle(xy_center, radius=radius, edgecolor="k", facecolor="w", zorder=0)
+            ax.add_patch(head)
+            # prevent squeeze
+            squeeze = patches.Circle((15.9, 8.9), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
+            ax.add_patch(squeeze)
+            squeeze = patches.Circle((0.1, 0.1), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
+            ax.add_patch(squeeze)
 
             plt.text(1 + (8*i), 9, str(index))
             plt.text(1 + (8*i), 8.5, modes[i])
@@ -142,22 +149,25 @@ class Dynamicstonetwork:
                       ]
 
         G.add_nodes_from(nodes_list)
-        pos = {'1-AF3': [1.5, 3.8], '1-F7': [0.4, 3], '1-F3': [1.2, 3.3], '1-FC5': [0.5, 2.5], '1-T7': [0, 2], '1-P7': [0.4, 1],
-               '1-O1': [1.5, 0.4], '1-O2': [2.5, 0.4], '1-P8': [3.6, 1], '1-T8': [4, 2], '1-FC6': [3.5, 2.5], '1-F4': [2.8, 3.3],
-               '1-F8': [3.6, 3], '1-AF4': [2.5, 3.8],
-                '2-AF3': [skew + 1.5, 3.8], '2-F7': [skew + 0.4, 3], '2-F3': [skew + 1.2, 3.3], '2-FC5': [skew + 0.5, 2.5], '2-T7': [skew + 0, 2], '2-P7': [skew + 0.4, 1],
-               '2-O1': [skew + 1.5, 0.4], '2-O2': [skew + 2.5, 0.4], '2-P8': [skew + 3.6, 1], '2-T8': [skew + 4, 2], '2-FC6': [skew + 3.5, 2.5], '2-F4': [skew + 2.8, 3.3],
-               '2-F8': [skew + 3.6, 3], '2-AF4': [skew + 2.5, 3.8]}
+        pos = {'1-AF3': [3.4, 4.8], '1-F7': [2.3, 4], '1-F3': [3.1, 4.3], '1-FC5': [2.4, 3.5], '1-T7': [2, 3], '1-P7': [2.3, 2],
+               '1-O1': [3.4, 1.4], '1-O2': [4.6, 1.4], '1-P8': [4.7, 2], '1-T8': [6, 3], '1-FC6': [5.6, 3.5], '1-F4': [4.9, 4.3],
+               '1-F8': [6.7, 3], '1-AF4': [4.6, 4.8],
+                '2-AF3': [skew + 3.4, 4.8], '2-F7': [skew + 2.3, 4], '2-F3': [skew + 3.1, 4.3], '2-FC5': [skew + 2.4, 3.5], '2-T7': [skew + 2, 3], '2-P7': [skew + 2.3, 2],
+               '2-O1': [skew + 3.4, 1.4], '2-O2': [skew + 4.6, 1.4], '2-P8': [skew + 5.7, 2], '2-T8': [skew + 6, 3], '2-FC6': [skew + 5.6, 3.5], '2-F4': [skew + 4.9, 4.3],
+               '2-F8': [skew + 5.7, 4], '2-AF4': [skew + 4.6, 4.8]}
 
+        m_to_norm = matrix - self.threshold
+        norm = numpy.linalg.norm(m_to_norm)
+        normalized = (m_to_norm) / norm
         # edges
         for i in range(len(nodes_list)):
             for j in range(len(nodes_list)):
                 if i < j:
                     edge = [(nodes_list[i], nodes_list[j])]
-                    if matrix[i][j] > self.threshold:
+                    if matrix[i, j] > self.threshold:
                         G.add_edges_from(edge)
                         nx.draw_networkx_edges(G, pos=pos, edgelist=edge,
-                                               width=min(10, (1000 * (matrix[i][j] - self.threshold))), edge_color='grey')
+                                               width=min(10, (10 * normalized[i, j])), edge_color='grey')
 
         # hot nodes
         color_map = []
@@ -193,11 +203,11 @@ class Dynamicstonetwork:
         self.score1 = None
         self.score2 = None
 
-        for index, matrix in enumerate(self.matrix):
+        for index in range(self.matrix.shape[0]):
             # print(ch_data.type)
             self.get_data(index)
             if index % downsp == 0:
-                plt = self.create_network(index, matrix,
+                plt = self.create_network(index, self.matrix[index],
                                     [self.mode1, self.mode2],
                                     [self.lives1, self.lives2],
                                     [self.action1, self.action2],
