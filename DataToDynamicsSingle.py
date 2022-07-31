@@ -43,16 +43,18 @@ class Datatodynamicssingle:
         U, s, Vh = np.linalg.svd(self.Xaug, full_matrices=False)
         # find Atilde using the SVD and Xaugp
         Atilde = np.linalg.multi_dot([U.conj().T, self.Xaugp, Vh.conj().T]) * np.reciprocal(s)
-        print(Atilde.shape)
+
         # scale Atilde to scale by energy
         if energy:
             Ahat = np.linalg.multi_dot([np.diag(np.power(s, -.5)), Atilde, np.diag(np.power(s, .5))])
         else:
             Ahat = Atilde
-        print(Ahat.shape)
+
         # find eigenvalues and eigenvectors
         self.eigenvalues, self.eigenvectors = np.linalg.eig(Ahat)
-        print(self.eigenvalues.shape, self.eigenvectors.shape)
+
+        if energy:
+            self.eigenvectors = np.diag(np.power(s, .5)).dot(self.eigenvectors)
         # find modes
         self.modes = (self.Xaugp.dot(Vh.conj().T) * np.reciprocal(s)).dot(self.eigenvectors)
 

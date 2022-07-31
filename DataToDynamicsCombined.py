@@ -59,6 +59,8 @@ class Datatodynamicscombined:
         # find eigenvalues and eigenvectors
         self.eigenvalues, self.eigenvectors = np.linalg.eig(Ahat)
         print(self.eigenvalues.shape, self.eigenvectors.shape)
+        if energy:
+            self.eigenvectors = np.diag(np.power(s, .5)).dot(self.eigenvectors)
         # find modes
         self.modes = (self.Xaugp.dot(Vh.conj().T) * np.reciprocal(s)).dot(self.eigenvectors)
 

@@ -61,8 +61,8 @@ class Game:
                 self.mode = 2
                 self.p1choice = self.player1.determine_direction()
                 self.p2choice = self.player2.determine_direction()
-                self.player1.go_to_sim()
-                self.player2.go_to_sim()
+                self.player1.go_to_sim(self.p1choice)
+                self.player2.go_to_sim(self.p2choice)
             else:
                 self.direction_selection()
         if self.mode == 2:
@@ -76,8 +76,8 @@ class Game:
 
     def draw(self, screen, size):
         width, height = size
-        self.player1.draw(screen, ((width/2) - 260, 150), (10, 150), (0, 250))
-        self.player2.draw(screen, (width - 260, 150), ((width / 2) + 10, 150), ((width / 2), 250))
+        self.player1.draw(screen, ((width/2) - 260, 150), (10, 150), (0, 250), ((width/2) - 10, 10))
+        self.player2.draw(screen, (width - 260, 150), ((width / 2) + 10, 150), ((width / 2), 250), (width - 10, 10))
 
 
 

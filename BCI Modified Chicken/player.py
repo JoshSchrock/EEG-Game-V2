@@ -6,6 +6,7 @@ from slider import Slider
 from lives import Lives
 import random
 import time
+import numpy as np
 
 class Player:
     def __init__(self, eegInterface, velocity, control):
@@ -20,6 +21,8 @@ class Player:
         self.lives = Lives(3, pygame.color.Color('blue'), 100, 100)
         self.sub_life = False
         self.random = None
+        self.is_recording = False
+        self.record = None
 
     def settup(self, initpos):
         self.player = Car(pygame.color.Color('blue'), 0, self.velocity, initpos)
@@ -49,7 +52,8 @@ class Player:
             self.eegInterface.add_control_marker(2)
             time.sleep(0.1)
 
-    def go_to_sim(self):
+    def go_to_sim(self, choice):
+        np.append(self.record, [[time.time(), choice]])
         if self.eegInterface:
             self.eegInterface.add_control_marker(3)
             time.sleep(0.1)
@@ -108,10 +112,24 @@ class Player:
             avg = sum(self.list_of_inputs) / len(self.list_of_inputs)
             self.slider.update(avg)
 
-    def draw(self, screen, scoreboard, slider, lives):
+    def begin_recording(self):
+        self.eegInterface.createRecording()
+        self.record = np.array([[time.time(), -1], ])
+        self.is_recording = True
+
+    def end_Recording(self):
+        self.eegInterface.endRecording()
+        np.append(self.record, [[time.time(), -1]])
+        file = f'{self.eegInterface.record_export_folder}\\EEG-Game_{self.eegInterface.profile_name}_{self.eegInterface.headset_id}_actions'
+        np.save(file, self.record)
+        self.is_recording = False
+
+    def draw(self, screen, scoreboard, slider, lives, record):
         self.player.draw(screen)
         self.enemy.draw(screen)
         self.slider.draw(screen, slider)
         self.scoreboard.draw(screen, scoreboard)
         self.lives.draw(screen, lives)
+        if self.is_recording == True:
+            pygame.draw.circle(screen, pygame.color.Color('red'), record, 2)
 

@@ -37,9 +37,10 @@ class EventHandler:
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_F5:
-                    self.player.eegInterface.createRecording()
+                    self.player.begin_recording()
                 if event.key == pygame.K_F6:
-                    self.player.eegInterface.endRecording()
+                    self.player.end_Recording()
+
 
 
     # controls given to pursuer

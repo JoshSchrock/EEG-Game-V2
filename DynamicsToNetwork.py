@@ -1,4 +1,3 @@
-import numpy
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -157,7 +156,7 @@ class Dynamicstonetwork:
                '2-F8': [skew + 5.7, 4], '2-AF4': [skew + 4.6, 4.8]}
 
         m_to_norm = matrix - self.threshold
-        norm = numpy.linalg.norm(m_to_norm)
+        norm = np.linalg.norm(m_to_norm)
         normalized = (m_to_norm) / norm
         # edges
         for i in range(len(nodes_list)):
