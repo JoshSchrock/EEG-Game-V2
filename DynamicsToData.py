@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 
 class Dynamicstodata:
     def __init__(self, modes, dynamics, freq=128):
@@ -25,9 +26,6 @@ class Dynamicstodata:
         self.action2 = None
         self.score1 = None
         self.score2 = None
-
-        print(np.absolute(self.modes[0:14, 0]))
-        print(np.absolute(self.modes[42:66, 0]))
 
     def calc_powers(self):
         temp = []
@@ -137,6 +135,9 @@ class Dynamicstodata:
 
         plots = []
         alphabets = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N']
+        rowlist = []
+        for i in range(rows):
+            rowlist.append(str(i))
 
         for i in range(end):
             matrixabs = np.absolute(modes[2:(14*rows) + 2, i])
@@ -148,7 +149,10 @@ class Dynamicstodata:
             caxes = ax1.matshow(matrixabs.tolist(), clim=color_lims, cmap='YlOrRd', aspect=1)
             cb1 = figure.colorbar(caxes)
             cb1.ax.tick_params(labelsize=14)
+            ax1.xaxis.set_major_locator(MultipleLocator(1))
             ax1.set_xticklabels([''] + alphabets)
+            ax1.yaxis.set_major_locator(MultipleLocator(1))
+            ax1.set_yticklabels([''] + rowlist)
 
             matrixangle = np.angle(modes[2:(14*rows) + 2, i])
             matrixangle = np.reshape(matrixangle, (rows, 14))
@@ -158,7 +162,10 @@ class Dynamicstodata:
             caxes = ax2.matshow(matrixangle.tolist(), clim=color_lims, cmap='hsv', aspect=1)
             cb2 = figure.colorbar(caxes)
             cb2.ax.tick_params(labelsize=14)
+            ax2.xaxis.set_major_locator(MultipleLocator(1))
             ax2.set_xticklabels([''] + alphabets)
+            ax2.yaxis.set_major_locator(MultipleLocator(1))
+            ax2.set_yticklabels([''] + rowlist)
 
             plots.append(plt)
 
