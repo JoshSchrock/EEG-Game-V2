@@ -2,13 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Dynamicstodata:
-    def __init__(self, modes, dynamics, stim, freq=128):
+    def __init__(self, modes, dynamics, freq=128):
         self.modes = modes
         self.dynamics = dynamics
         self.freq = freq
         self.powers = None
         self.frequencies = None
-        self.stim = stim
         self.actiondict = {1: 'Planning',
                            2: 'Measuring',
                            3: 'Simulation',
@@ -27,6 +26,9 @@ class Dynamicstodata:
         self.score1 = None
         self.score2 = None
 
+        print(np.absolute(self.modes[0:14, 0]))
+        print(np.absolute(self.modes[42:66, 0]))
+
     def calc_powers(self):
         temp = []
         for i in range(self.modes.shape[1]):
@@ -39,34 +41,7 @@ class Dynamicstodata:
         ws = np.log(dynamics) * self.freq
         self.frequencies = np.absolute((ws.imag / (2*np.pi)))
 
-    def get_data(self, index):
-
-        if 1 <= self.stim[1, index] <= 3 and int(self.stim[0, index]) == 1:
-            self.mode1 = self.actiondict[self.stim[1, index]]
-
-        elif 21 <= self.stim[1, index] <= 23 and int(self.stim[0, index]) == 1:
-            self.lives1 = self.actiondict[self.stim[1, index]]
-
-        elif 10 <= self.stim[1, index] <= 12 and int(self.stim[0, index]) == 2:
-            action = self.actiondict[self.stim[1, index]]
-            if action == self.action1:
-                self.action1 = 'Neutral'
-            else:
-                self.action1 = action
-
-        elif self.stim[1, index] >= 25 and int(self.stim[0, index]) == 1:
-            self.score1 = self.stim[1, index] - 100
-
-        elif int(self.stim[0, index]) == 0:
-            pass
-
-        else:
-            self.mode1 = 'ERROR'
-            self.lives1 = 'ERROR'
-            self.action1 = 'ERROR'
-            self.score1 = 'ERROR'
-
-    def plot_eigs(self):
+    def plot_eigs(self, show=True):
         if not self.powers:
             self.calc_powers()
 
@@ -92,9 +67,12 @@ class Dynamicstodata:
         plt.xlabel('Real')
         plt.title('Eigenvalues')
 
+        if show:
+            plt.show()
+
         return plt
 
-    def plot_spectrum(self):
+    def plot_spectrum(self, show=True):
         if self.frequencies is None:
             self.calc_frequencies()
 
@@ -115,9 +93,78 @@ class Dynamicstodata:
         plt.xlabel('Frequency (Hz)')
         plt.title('Spectrum')
 
+        if show:
+            plt.show()
+
         return plt
 
-    def export(self):
+    def plot_modes(self, freqlow, freqhigh, number=None, rows=2, show=True, arr='power'):
+        if self.frequencies is None:
+            self.calc_frequencies()
+
+        if self.powers is None:
+            self.calc_powers()
+
+        modes_indexes = []
+        frequencies = []
+        for i, x in enumerate(self.frequencies):
+            if freqlow <= x <= freqhigh:
+                modes_indexes.append(i)
+                frequencies.append(x)
+
+        modes = np.zeros((self.modes.shape[0], len(modes_indexes)), dtype=complex)
+        powers = []
+        for i, x in enumerate(modes_indexes):
+            modes[:, i] = self.modes[:, x]
+            powers.append(self.powers[x])
+
+        modes = np.concatenate(([powers], modes), axis=0)
+        modes = np.concatenate(([frequencies], modes), axis=0)
+
+        if arr == 'frequency':
+            sorting_indexes = np.argsort(modes[0])
+        elif arr == 'power':
+            sorting_indexes = np.argsort(modes[1])
+        else:
+            return print('Arg Error')
+        modes = modes[:, sorting_indexes]
+        modes = np.flip(modes, axis=1)
+
+        if number:
+            end = min(number, modes.shape[1])
+        else:
+            end = modes.shape[1]
+
+        plots = []
+        alphabets = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N']
+
+        for i in range(end):
+            matrixabs = np.absolute(modes[2:(14*rows) + 2, i])
+            matrixabs = np.reshape(matrixabs, (-1, 14))
+            color_lims = np.percentile(matrixabs, [0, 100])
+            figure = plt.figure(figsize=(15, 5), frameon=False)
+            ax1 = figure.add_subplot(211)
+            ax1.set_title(f'Mode Energy - {i}: Frequency {modes[0, i]} Hz, Power {modes[1, i]}')
+            caxes = ax1.matshow(matrixabs.tolist(), clim=color_lims, cmap='YlOrRd', aspect=1)
+            cb1 = figure.colorbar(caxes)
+            cb1.ax.tick_params(labelsize=14)
+            ax1.set_xticklabels([''] + alphabets)
+
+            matrixangle = np.angle(modes[2:(14*rows) + 2, i])
+            matrixangle = np.reshape(matrixangle, (rows, 14))
+            color_lims = np.percentile(matrixangle, [0, 100])
+            ax2 = figure.add_subplot(212)
+            ax2.set_title(f"Mode Angle - {i}: Frequency {modes[0, i]} Hz, Power {modes[1, i]}")
+            caxes = ax2.matshow(matrixangle.tolist(), clim=color_lims, cmap='hsv', aspect=1)
+            cb2 = figure.colorbar(caxes)
+            cb2.ax.tick_params(labelsize=14)
+            ax2.set_xticklabels([''] + alphabets)
+
+            plots.append(plt)
+
+        return plots
+
+
         
 
 
