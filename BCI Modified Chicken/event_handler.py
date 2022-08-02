@@ -34,18 +34,18 @@ class EventHandler:
             if pressed_keys[pygame.K_RIGHT]:
                 self.player.list_of_inputs.append(2)
 
-        for event in events:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_F5:
-                    self.player.begin_recording()
-                if event.key == pygame.K_F6:
-                    self.player.end_Recording()
+        if pressed_keys[pygame.K_F5]:
+            if self.player.is_recording == False:
+                self.player.begin_recording()
+        if pressed_keys[pygame.K_F6]:
+            if self.player.is_recording == True:
+                self.player.end_Recording()
 
 
 
     # controls given to pursuer
     def EEGController(self):
-        if not self.player.eegInterface:
+        if self.player.eegInterface is None:
             if self.player.random:
                 self.player.list_of_inputs.append(self.player.random)
         else:

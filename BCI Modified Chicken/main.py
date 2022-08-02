@@ -20,7 +20,8 @@ def main():
 
 
     #  recording settings
-    record_export_folder = f'{os.getcwd()}\EEGExports' # your place to export, you should have write
+    export_folder = 'Test'
+    record_export_folder = f'{os.getcwd()}\\EEGExports\\{export_folder}' # your place to export, you should have write
     # permission, example on desktop
     record_export_format = 'EDF'
     record_export_version = 'V2'
@@ -29,14 +30,14 @@ def main():
     headset_1 = 'EPOCFLEX-F0000172'
     headset_2 = 'EPOCFLEX-F000015B'
     profile_name_1 = "Josh Schrock"
-    profile_name_2 = "Test 1"
+    profile_name_2 = "Patrick"
 
     eegInterface1 = EEGInterface(your_app_client_id, your_app_client_secret, your_app_license, record_export_folder,
                                  record_export_format, record_export_version, headset_1, profile_name_1)
-    # eegInterface2 = EEGInterface(your_app_client_id, your_app_client_secret, your_app_license, record_export_folder,
-    #                              record_export_format, record_export_version, headset_2, profile_name_2)
+    eegInterface2 = EEGInterface(your_app_client_id, your_app_client_secret, your_app_license, record_export_folder,
+                                 record_export_format, record_export_version, headset_2, profile_name_2)
 
-    game = Game([eegInterface1, None], frame_rate)  # Methods of game operation
+    game = Game([eegInterface1, eegInterface2], frame_rate)  # Methods of game operation
     viewer = Viewer(screen1, game)  # display the game
 
     while True:

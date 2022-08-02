@@ -37,8 +37,9 @@ class Player:
             if self.lives.lives == 0:
                 self.lives = Lives(3, pygame.color.Color('blue'), 100, 100)
                 self.scoreboard.score = 0
-        np.append(self.record, [[time.time(), 1, -1]])
-        if self.eegInterface:
+        if self.is_recording:
+            np.concatenate((self.record, np.array([[time.time(), 1, -1]])), axis=0)
+        if self.eegInterface is not None:
             self.eegInterface.add_control_marker(1)
             time.sleep(0.1)
             self.eegInterface.add_control_marker(self.scoreboard.score + 100)
@@ -49,14 +50,16 @@ class Player:
     def go_to_measure(self):
         self.random = random.randint(0, 6) / 3
         self.list_of_inputs = []
-        np.append(self.record, [[time.time(), 2, -1]])
-        if self.eegInterface:
+        if self.is_recording:
+            np.concatenate((self.record, np.array([[time.time(), 2, -1]])), axis=0)
+        if self.eegInterface is not None:
             self.eegInterface.add_control_marker(2)
             time.sleep(0.1)
 
     def go_to_sim(self, choice):
-        np.append(self.record, [[time.time(), 3, choice]])
-        if self.eegInterface:
+        if self.is_recording:
+            np.concatenate((self.record, np.array([[time.time(), 3, choice]])), axis=0)
+        if self.eegInterface is not None:
             self.eegInterface.add_control_marker(3)
             time.sleep(0.1)
 
@@ -78,6 +81,8 @@ class Player:
             self.sub_life = False
             if urchoice == 1:
                 self.score_to_add = 5
+            elif thrchoice == 1:
+                self.score_to_add = 0
             else:
                 self.score_to_add = 1
 
@@ -116,13 +121,14 @@ class Player:
 
     def begin_recording(self):
         self.eegInterface.createRecording()
-        self.record = np.array([[time.time(), -1, -1], ])
+        self.record = np.array([[time.time(), -1, -1]])
         self.is_recording = True
 
     def end_Recording(self):
         self.eegInterface.endRecording()
-        np.append(self.record, [[time.time(), -1, -1]])
-        file = f'{self.eegInterface.record_export_folder}\\EEG-Game_{self.eegInterface.profile_name}_{self.eegInterface.headset_id}_actions'
+        np.concatenate((self.record, np.array([[time.time(), -1, -1]])), axis=0)
+        file = f'{self.eegInterface.record_export_folder}\\EEG-Game_{self.eegInterface.profile_name}_{self.eegInterface.headset_id}_{time.time()}_actions'
+        print(self.record)
         np.save(file, self.record)
         self.is_recording = False
 
@@ -132,6 +138,6 @@ class Player:
         self.slider.draw(screen, slider)
         self.scoreboard.draw(screen, scoreboard)
         self.lives.draw(screen, lives)
-        if self.is_recording == True:
-            pygame.draw.circle(screen, pygame.color.Color('red'), record, 2)
+        if self.is_recording:
+            pygame.draw.circle(screen, pygame.color.Color('red'), record, 5)
 

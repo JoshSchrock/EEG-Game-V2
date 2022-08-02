@@ -11,7 +11,6 @@ from player import Player
 
 class Game:
     def __init__(self, eegInterfaces, frame_rate):
-        self.eegInterfaces = eegInterfaces
         self.frame_rate = frame_rate
         self.starttime = time.time()
         self.velocity = 1
@@ -27,6 +26,8 @@ class Game:
         w, h = pygame.display.get_surface().get_size()
         self.player1.settup((w / 4, h))
         self.player2.settup(((3*w) / 4, h))
+        print(self.player1.is_recording)
+        print(self.player2.is_recording)
 
     def planning_time(self):
         self.display = str(round(time.time() - self.starttime, 1))
