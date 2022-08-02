@@ -141,7 +141,7 @@ class Dynamicstodata:
 
         for i in range(end):
             matrixabs = np.absolute(modes[2:(14*rows) + 2, i])
-            matrixabs = np.reshape(matrixabs, (-1, 14))
+            matrixabs = np.reshape(matrixabs, (rows, 14))
             color_lims = np.percentile(matrixabs, [0, 100])
             figure = plt.figure(figsize=(15, 5), frameon=False)
             ax1 = figure.add_subplot(211)
@@ -168,6 +168,89 @@ class Dynamicstodata:
             ax2.set_yticklabels([''] + rowlist)
 
             plots.append(plt)
+
+        return plots
+
+    def plot_mode_avg(self, freqlow, freqhigh, number=None, rows=2, arr='power', climp=(), clima=()):
+        if self.frequencies is None:
+            self.calc_frequencies()
+
+        if self.powers is None:
+            self.calc_powers()
+
+        modes_indexes = []
+        frequencies = []
+        for i, x in enumerate(self.frequencies):
+            if freqlow <= x <= freqhigh:
+                modes_indexes.append(i)
+                frequencies.append(x)
+
+        modes = np.zeros((self.modes.shape[0], len(modes_indexes)), dtype=complex)
+        powers = []
+        for i, x in enumerate(modes_indexes):
+            modes[:, i] = self.modes[:, x]
+            powers.append(self.powers[x])
+
+        modes = np.concatenate(([powers], modes), axis=0)
+        modes = np.concatenate(([frequencies], modes), axis=0)
+
+        if arr == 'frequency':
+            sorting_indexes = np.argsort(modes[0])
+        elif arr == 'power':
+            sorting_indexes = np.argsort(modes[1])
+        else:
+            return print('Arg Error')
+        modes = modes[:, sorting_indexes]
+        modes = np.flip(modes, axis=1)
+
+        if number:
+            end = min(number, modes.shape[1])
+        else:
+            end = modes.shape[1]
+
+        avgfreq = np.mean(modes[0, 0:end])
+        avgpower = np.mean(modes[1, 0:end])
+        avgmodesabs = np.mean(np.absolute(modes[2:, 0:end]), axis=1)
+        avgmodesangles = np.mean(np.angle(modes[2:, 0:end]), axis=1)
+
+        plots = []
+        alphabets = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N']
+        rowlist = []
+        for i in range(rows):
+            rowlist.append(str(i))
+
+        matrixangle = avgmodesabs[0:(14 * rows)]
+        matrixabs = np.reshape(matrixangle, (rows, 14))
+        color_lims = np.percentile(matrixabs, [0, 100])
+        if len(climp) > 0:
+            color_lims = climp
+        figure = plt.figure(figsize=(15, 5), frameon=False)
+        ax1 = figure.add_subplot(211)
+        ax1.set_title(f'Mode Energy - Avg: Frequency {avgfreq} Hz, Power {avgpower}')
+        caxes = ax1.matshow(matrixabs.tolist(), clim=color_lims, cmap='YlOrRd', aspect=1)
+        cb1 = figure.colorbar(caxes)
+        cb1.ax.tick_params(labelsize=14)
+        ax1.xaxis.set_major_locator(MultipleLocator(1))
+        ax1.set_xticklabels([''] + alphabets)
+        ax1.yaxis.set_major_locator(MultipleLocator(1))
+        ax1.set_yticklabels([''] + rowlist)
+
+        matrixangle = avgmodesangles[0:(14 * rows)]
+        matrixangle = np.reshape(matrixangle, (rows, 14))
+        color_lims = np.percentile(matrixangle, [0, 100])
+        if len(clima) > 0:
+            color_lims = clima
+        ax2 = figure.add_subplot(212)
+        ax2.set_title(f"Mode Angle - Avg: Frequency {avgfreq} Hz, Power {avgpower}")
+        caxes = ax2.matshow(matrixangle.tolist(), clim=color_lims, cmap='hsv', aspect=1)
+        cb2 = figure.colorbar(caxes)
+        cb2.ax.tick_params(labelsize=14)
+        ax2.xaxis.set_major_locator(MultipleLocator(1))
+        ax2.set_xticklabels([''] + alphabets)
+        ax2.yaxis.set_major_locator(MultipleLocator(1))
+        ax2.set_yticklabels([''] + rowlist)
+
+        plots.append(plt)
 
         return plots
 

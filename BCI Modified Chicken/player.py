@@ -37,6 +37,7 @@ class Player:
             if self.lives.lives == 0:
                 self.lives = Lives(3, pygame.color.Color('blue'), 100, 100)
                 self.scoreboard.score = 0
+        np.append(self.record, [[time.time(), 1, -1]])
         if self.eegInterface:
             self.eegInterface.add_control_marker(1)
             time.sleep(0.1)
@@ -48,12 +49,13 @@ class Player:
     def go_to_measure(self):
         self.random = random.randint(0, 6) / 3
         self.list_of_inputs = []
+        np.append(self.record, [[time.time(), 2, -1]])
         if self.eegInterface:
             self.eegInterface.add_control_marker(2)
             time.sleep(0.1)
 
     def go_to_sim(self, choice):
-        np.append(self.record, [[time.time(), choice]])
+        np.append(self.record, [[time.time(), 3, choice]])
         if self.eegInterface:
             self.eegInterface.add_control_marker(3)
             time.sleep(0.1)
@@ -114,12 +116,12 @@ class Player:
 
     def begin_recording(self):
         self.eegInterface.createRecording()
-        self.record = np.array([[time.time(), -1], ])
+        self.record = np.array([[time.time(), -1, -1], ])
         self.is_recording = True
 
     def end_Recording(self):
         self.eegInterface.endRecording()
-        np.append(self.record, [[time.time(), -1]])
+        np.append(self.record, [[time.time(), -1, -1]])
         file = f'{self.eegInterface.record_export_folder}\\EEG-Game_{self.eegInterface.profile_name}_{self.eegInterface.headset_id}_actions'
         np.save(file, self.record)
         self.is_recording = False
