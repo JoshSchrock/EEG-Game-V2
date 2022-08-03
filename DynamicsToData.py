@@ -171,7 +171,7 @@ class Dynamicstodata:
 
         return plots
 
-    def plot_mode_avg(self, freqlow, freqhigh, number=None, rows=2, arr='power', climp=(), clima=()):
+    def find_mode_avg(self, freqlow, freqhigh, number=None, arr='power'):
         if self.frequencies is None:
             self.calc_frequencies()
 
@@ -213,6 +213,11 @@ class Dynamicstodata:
         avgmodesabs = np.mean(np.absolute(modes[2:, 0:end]), axis=1)
         avgmodesangles = np.mean(np.angle(modes[2:, 0:end]), axis=1)
 
+        return avgfreq, avgpower, avgmodesabs, avgmodesangles
+
+    def plot_mode_avg(self, freqlow, freqhigh, number=None, rows=2, arr='power', climp=(), clima=()):
+        avgfreq, avgpower, avgmodesabs, avgmodesangles = self.find_mode_avg(freqlow, freqhigh, number, arr)
+
         plots = []
         alphabets = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N']
         rowlist = []
@@ -233,7 +238,7 @@ class Dynamicstodata:
         ax1.xaxis.set_major_locator(MultipleLocator(1))
         ax1.set_xticklabels([''] + alphabets)
         ax1.yaxis.set_major_locator(MultipleLocator(1))
-        ax1.set_yticklabels([''] + rowlist)
+        ax1.set_yticklabels([''] + ['1'])
 
         matrixangle = avgmodesangles[0:(14 * rows)]
         matrixangle = np.reshape(matrixangle, (rows, 14))
@@ -253,9 +258,6 @@ class Dynamicstodata:
         plots.append(plt)
 
         return plots
-
-
-        
 
 
 
