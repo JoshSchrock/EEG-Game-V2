@@ -211,7 +211,7 @@ class Dynamicstonetwork:
                                     [self.lives1, self.lives2],
                                     [self.action1, self.action2],
                                     [self.score1, self.score2])
-                pngname = f'{new_dir}\\Chuncks\\chunck_{str(index)}.png'
+                pngname = f'{new_dir}\\Chuncks\\{str(index)}.png'
                 plt.savefig(pngname, format="PNG")
                 plt.close()
 
@@ -232,14 +232,17 @@ class Dynamicstonetwork:
         image_folder = f'{new_dir}\\Chuncks'
         video_name = f'{new_dir}\\Net_of_{export_name}.avi'
 
-        images = [img for img in os.listdir(image_folder) if img.endswith(".png")]
-        frame = cv2.imread(os.path.join(image_folder, images[0]))
+        images = []
+        for i in range(self.matrix.shape[0]):
+            if i % downsp == 0:
+                images.append(f'{image_folder}\\{str(i)}.png')
+        frame = cv2.imread(images[0])
         height, width, layers = frame.shape
 
         video = cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'DIVX'), 128//downsp, (width, height))
 
         for image in images:
-            video.write(cv2.imread(os.path.join(image_folder, image)))
+            video.write(cv2.imread(image))
 
         cv2.destroyAllWindows()
         video.release()

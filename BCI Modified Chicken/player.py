@@ -38,7 +38,7 @@ class Player:
                 self.lives = Lives(3, pygame.color.Color('blue'), 100, 100)
                 self.scoreboard.score = 0
         if self.is_recording:
-            np.concatenate((self.record, np.array([[time.time(), 1, -1]])), axis=0)
+            self.record = np.concatenate((self.record, np.array([[time.time(), 1, -1]])), axis=0)
         if self.eegInterface is not None:
             self.eegInterface.add_control_marker(1)
             time.sleep(0.1)
@@ -51,14 +51,14 @@ class Player:
         self.random = random.randint(0, 6) / 3
         self.list_of_inputs = []
         if self.is_recording:
-            np.concatenate((self.record, np.array([[time.time(), 2, -1]])), axis=0)
+            self.record = np.concatenate((self.record, np.array([[time.time(), 2, -1]])), axis=0)
         if self.eegInterface is not None:
             self.eegInterface.add_control_marker(2)
             time.sleep(0.1)
 
     def go_to_sim(self, choice):
         if self.is_recording:
-            np.concatenate((self.record, np.array([[time.time(), 3, choice]])), axis=0)
+            self.record = np.concatenate((self.record, np.array([[time.time(), 3, choice]])), axis=0)
         if self.eegInterface is not None:
             self.eegInterface.add_control_marker(3)
             time.sleep(0.1)
@@ -126,7 +126,7 @@ class Player:
 
     def end_Recording(self):
         self.eegInterface.endRecording()
-        np.concatenate((self.record, np.array([[time.time(), -1, -1]])), axis=0)
+        self.record = np.concatenate((self.record, np.array([[time.time(), -1, -1]])), axis=0)
         file = f'{self.eegInterface.record_export_folder}\\EEG-Game_{self.eegInterface.profile_name}_{self.eegInterface.headset_id}_{time.time()}_actions'
         print(self.record)
         np.save(file, self.record)
