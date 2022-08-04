@@ -1,17 +1,6 @@
-import mne_connectivity
-import mne
 import numpy
 import numpy as np
 import matplotlib.pyplot as plt
-import networkx as nx
-from matplotlib import patches
-import os
-import scipy.signal as sig
-from pydmd import DMD
-from pydmd import MrDMD
-from pydmd import SpDMD
-from pydmd import FbDMD
-import scipy.integrate
 
 class Datatodynamicscombined:
     def __init__(self, dataset1, dataset2, s0, s1, samplefreq=128, aug=True):
