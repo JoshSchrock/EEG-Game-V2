@@ -19,7 +19,7 @@ class Game:
         self.player2 = Player(eegInterfaces[1], self.velocity, 1)
         self.p1choice = None
         self.p2choice = None
-        self.ptime = 3
+        self.ptime = 5
         self.mtime = 5
         self.stime = 5
 
