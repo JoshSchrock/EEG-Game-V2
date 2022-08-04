@@ -34,11 +34,15 @@ class Viewer:
         self.screen.blit(plyr1, (50, 50))
         img = self.font.render(self.game.display, True, pygame.color.Color('black'))
         self.screen.blit(img, ((width / 2) - 100, 50))
+        img = self.font.render(self.game.warning_display, True, pygame.color.Color('red'))
+        self.screen.blit(img, ((width / 4) - img.get_width()/2, height/2))
 
         plyr2 = self.font.render('Player 2', True, pygame.color.Color('black'))
         self.screen.blit(plyr2, (width / 2 + 50, 50))
         img = self.font.render(self.game.display, True, pygame.color.Color('black'))
         self.screen.blit(img, (width - 100, 50))
+        img = self.font.render(self.game.warning_display, True, pygame.color.Color('red'))
+        self.screen.blit(img, (3*(width / 4) - img.get_width()/2, height / 2))
 
         # draw game
         self.game.draw(self.screen, (width, height))

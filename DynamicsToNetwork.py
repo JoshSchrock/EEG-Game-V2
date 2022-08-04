@@ -68,7 +68,7 @@ class Dynamicstonetwork:
 
         elif 10 <= self.stim2[1, index] <= 12 and int(self.stim2[0, index]) == 2:
             action = self.actiondict[self.stim2[1, index]]
-            if action == self.action1:
+            if action == self.action2:
                 self.action2 = 'Neutral'
             else:
                 self.action2 = action
