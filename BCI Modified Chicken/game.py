@@ -85,8 +85,3 @@ class Game:
         self.player1.draw(screen, ((width/4) + 180, 150), ((width / 4) - 440, 150), ((width / 4) - 465, 250), ((width / 2) - 10, 10))
         self.player2.draw(screen, ((3 * width) / 4 + 180, 150), (((3 * width) / 4) - 440, 150), (((3 * width) / 4) - 465, 250), (width - 10, 10))
 
-
-
-
-
-
