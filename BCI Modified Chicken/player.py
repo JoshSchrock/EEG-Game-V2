@@ -84,7 +84,7 @@ class Player:
             elif thrchoice == 1:
                 self.score_to_add = 0
             else:
-                self.score_to_add = 2
+                self.score_to_add = 3
 
         if self.player.y <= h / 2 + 100 or self.enemy.y >= h / 2 - 100:
             if not self.player.choicestart:
