@@ -74,7 +74,7 @@ class Player:
 
         if (urchoice + thrchoice) / 2 == 1:
             collision = True
-            self.score_to_add = -25
+            self.score_to_add = -10
             self.sub_life = True
         else:
             collision = False
@@ -84,7 +84,7 @@ class Player:
             elif thrchoice == 1:
                 self.score_to_add = 0
             else:
-                self.score_to_add = 1
+                self.score_to_add = 2
 
         if self.player.y <= h / 2 + 100 or self.enemy.y >= h / 2 - 100:
             if not self.player.choicestart:
