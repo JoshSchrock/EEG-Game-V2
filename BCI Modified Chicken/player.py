@@ -128,7 +128,6 @@ class Player:
         self.eegInterface.endRecording()
         self.record = np.concatenate((self.record, np.array([[time.time(), -1, -1]])), axis=0)
         file = f'{self.eegInterface.record_export_folder}\\EEG-Game_{self.eegInterface.profile_name}_{self.eegInterface.headset_id}_{time.time()}_actions'
-        print(self.record)
         np.save(file, self.record)
         self.is_recording = False
 

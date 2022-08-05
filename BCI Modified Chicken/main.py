@@ -23,6 +23,8 @@ def main():
     export_folder = 'Test'
     record_export_folder = f'{os.getcwd()}\\EEGExports\\{export_folder}' # your place to export, you should have write
     # permission, example on desktop
+    if not os.path.exists(record_export_folder):
+        os.makedirs(record_export_folder)
     record_export_format = 'EDF'
     record_export_version = 'V2'
 
