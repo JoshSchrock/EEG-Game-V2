@@ -120,16 +120,18 @@ class Player:
             self.slider.update(avg)
 
     def begin_recording(self):
-        self.eegInterface.createRecording()
-        self.record = np.array([[time.time(), -1, -1]])
-        self.is_recording = True
+        if self.eegInterface is not None:
+            self.eegInterface.createRecording()
+            self.record = np.array([[time.time(), -1, -1]])
+            self.is_recording = True
 
     def end_Recording(self):
-        self.eegInterface.endRecording()
-        self.record = np.concatenate((self.record, np.array([[time.time(), -1, -1]])), axis=0)
-        file = f'{self.eegInterface.record_export_folder}\\EEG-Game_{self.eegInterface.profile_name}_{self.eegInterface.headset_id}_{time.time()}_actions'
-        np.save(file, self.record)
-        self.is_recording = False
+        if self.eegInterface is not None:
+            self.eegInterface.endRecording()
+            self.record = np.concatenate((self.record, np.array([[time.time(), -1, -1]])), axis=0)
+            file = f'{self.eegInterface.record_export_folder}\\EEG-Game_{self.eegInterface.profile_name}_{self.eegInterface.headset_id}_{time.time()}_actions'
+            np.save(file, self.record)
+            self.is_recording = False
 
     def draw(self, screen, scoreboard, slider, lives, record):
         self.player.draw(screen)

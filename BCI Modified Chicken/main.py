@@ -20,7 +20,7 @@ def main():
 
 
     #  recording settings
-    export_folder = 'Test'
+    export_folder = 'Patrick and Josh Trial 3'
     record_export_folder = f'{os.getcwd()}\\EEGExports\\{export_folder}' # your place to export, you should have write
     # permission, example on desktop
     if not os.path.exists(record_export_folder):
