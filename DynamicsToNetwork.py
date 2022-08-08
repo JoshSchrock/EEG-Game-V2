@@ -7,12 +7,15 @@ import scipy.signal as sig
 import cv2
 
 class Dynamicstonetwork:
-    def __init__(self, matrix, stim1, stim2):
+    def __init__(self, matrix, stim1, stim2, info1, info2):
         self.threshold = np.nanquantile(matrix, 0.90)
         self.matrix = matrix
         self.stim1 = stim1
         self.stim2 = stim2
-
+        self.info1 = info1
+        self.info2 = info2
+        self.start1 = self.info1[0, 0]
+        self.start2 = self.info2[0, 0]
 
         self.actiondict = {1: 'Planning',
                       2: 'Measuring',
@@ -28,10 +31,23 @@ class Dynamicstonetwork:
         self.mode2 = None
         self.lives1 = None
         self.lives2 = None
+        self.times1 = 0
         self.action1 = None
         self.action2 = None
         self.score1 = None
         self.score2 = None
+        self.times2 = 0
+
+        self.info1_index = 0
+        self.info2_index = 0
+        self.total_choices1 = 0
+        self.total_choices2 = 0
+        self.right_choices1 = 0
+        self.right_choices2 = 0
+        self.left_choices1 = 0
+        self.left_choices2 = 0
+        self.center_choices1 = 0
+        self.center_choices2 = 0
 
     def get_data(self, index):
 
@@ -43,10 +59,12 @@ class Dynamicstonetwork:
 
         elif 10 <= self.stim1[1, index] <= 12 and int(self.stim1[0, index]) == 2:
             action = self.actiondict[self.stim1[1, index]]
-            if action == self.action1:
+            if action == self.action1 and self.times1 == 1:
                 self.action1 = 'Neutral'
+                self.times1 = 0
             else:
                 self.action1 = action
+                self.times1 = 1
 
         elif self.stim1[1, index] >= 25 and int(self.stim1[0, index]) == 1:
             self.score1 = self.stim1[1, index] - 100
@@ -68,10 +86,12 @@ class Dynamicstonetwork:
 
         elif 10 <= self.stim2[1, index] <= 12 and int(self.stim2[0, index]) == 2:
             action = self.actiondict[self.stim2[1, index]]
-            if action == self.action2:
+            if action == self.action2 and self.times2 == 1:
                 self.action2 = 'Neutral'
+                self.times2 = 0
             else:
                 self.action2 = action
+                self.times2 = 1
 
         elif self.stim2[1, index] >= 25 and int(self.stim2[0, index]) == 1:
             self.score2 = self.stim2[1, index] - 100
@@ -85,6 +105,45 @@ class Dynamicstonetwork:
             self.action2 = 'ERROR'
             self.score2 = 'ERROR'
 
+    def get_info1(self, index):
+        if round(index / 128, 1) == round(self.info1[self.info1_index, 0] - self.start1, 1):
+            if self.info1[self.info1_index, 1] == 1:
+                return 'Planning', None
+            elif self.info1[self.info1_index, 1] == 2:
+                return 'Measuring', None
+            elif self.info1[self.info1_index, 1] == 3:
+                self.total_choices1 += 1
+                if self.info1[self.info1_index, 2] == 0:
+                    self.left_choices1 += 1
+                    return 'Simulation', 'Left'
+                elif self.info1[self.info1_index, 2] == 1:
+                    self.center_choices1 += 1
+                    return 'Simulation', 'Center'
+                elif self.info1[self.info1_index, 2] == 2:
+                    self.right_choices1 += 1
+                    return 'Simulation', 'Right'
+
+            self.info1_index += 1
+    def get_info2(self, index):
+        if round(index / 128, 1) == round(self.info2[self.info2_index, 0] - self.start2, 1):
+            if self.info2[self.info2_index, 1] == 1:
+                return 'Planning', None
+            elif self.info2[self.info2_index, 1] == 2:
+                return 'Measuring', None
+            elif self.info2[self.info2_index, 1] == 3:
+                self.total_choices2 += 1
+                if self.info2[self.info2_index, 2] == 0:
+                    self.left_choices2 += 1
+                    return 'Simulation', 'Left'
+                elif self.info2[self.info2_index, 2] == 1:
+                    self.center_choices2 += 1
+                    return 'Simulation', 'Center'
+                elif self.info2[self.info2_index, 2] == 2:
+                    self.right_choices2 += 1
+                    return 'Simulation', 'Right'
+
+            self.info2_index += 1
+
     def draw_networks(self):
         self.mode1 = None
         self.mode2 = None
@@ -94,15 +153,31 @@ class Dynamicstonetwork:
         self.action2 = None
         self.score1 = None
         self.score2 = None
+        self.times1 = 0
+        self.times2 = 0
+
+        self.info1_index = 0
+        self.info2_index = 0
+        self.total_choices1 = 0
+        self.total_choices2 = 0
+        self.right_choices1 = 0
+        self.right_choices2 = 0
+        self.left_choices1 = 0
+        self.left_choices2 = 0
+        self.center_choices1 = 0
+        self.center_choices2 = 0
+
+
         for index in range(self.matrix.shape[0]):
             self.get_data(index)
             self.create_network(index, self.matrix[index],
                                 [self.mode1, self.mode2],
                                 [self.lives1, self.lives2],
                                 [self.action1, self.action2],
-                                [self.score1, self.score2])
+                                [self.score1, self.score2],
+                                [(self.get_info1(index)), (self.get_info2(index))])
 
-    def create_network(self, index, matrix, modes, lives, actions, scores):
+    def create_network(self, index, matrix, modes, lives, actions, scores, pinfo):
         # plot------------------------------
         fig = plt.figure(figsize=(16, 9))
         ax = plt.axes()
@@ -136,6 +211,10 @@ class Dynamicstonetwork:
             plt.text(1 + (8*i), 8, lives[i])
             plt.text(1 + (8*i), 7.5, actions[i])
             plt.text(1 + (8*i), 7, scores[i])
+
+            plt.text(2.5 + (8 * i), 9, pinfo[i][0])
+            plt.text(2.5 + (8 * i), 8.5, pinfo[i][1])
+
 
 
         skew = 8
@@ -201,6 +280,19 @@ class Dynamicstonetwork:
         self.action2 = None
         self.score1 = None
         self.score2 = None
+        self.times1 = 0
+        self.times2 = 0
+
+        self.info1_index = 0
+        self.info2_index = 0
+        self.total_choices1 = 0
+        self.total_choices2 = 0
+        self.right_choices1 = 0
+        self.right_choices2 = 0
+        self.left_choices1 = 0
+        self.left_choices2 = 0
+        self.center_choices1 = 0
+        self.center_choices2 = 0
 
         for index in range(self.matrix.shape[0]):
             # print(ch_data.type)
@@ -210,7 +302,8 @@ class Dynamicstonetwork:
                                     [self.mode1, self.mode2],
                                     [self.lives1, self.lives2],
                                     [self.action1, self.action2],
-                                    [self.score1, self.score2])
+                                    [self.score1, self.score2],
+                                    [(self.get_info1(index)), (self.get_info2(index))])
                 pngname = f'{new_dir}\\Chuncks\\{str(index)}.png'
                 plt.savefig(pngname, format="PNG")
                 plt.close()
