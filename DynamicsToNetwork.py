@@ -49,6 +49,8 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
+        self.all_info = [('', ''), ('', '')]
+
     def get_data(self, index):
 
         if 1 <= self.stim1[1, index] <= 3 and int(self.stim1[0, index]) == 1:
@@ -105,42 +107,42 @@ class Dynamicstonetwork:
             self.action2 = 'ERROR'
             self.score2 = 'ERROR'
 
-    def get_info1(self, index):
-        if round(index / 128, 1) == round(self.info1[self.info1_index, 0] - self.start1, 1):
+    def get_info(self, index):
+        if round(index / 128, 1) == round(self.info1[self.info1_index, 0] - self.start1, 1) - 4:
             if self.info1[self.info1_index, 1] == 1:
-                return 'Planning', None
+                self.all_info[0] = ('Planning', '')
             elif self.info1[self.info1_index, 1] == 2:
-                return 'Measuring', None
+                self.all_info[0] = ('Measuring', '')
             elif self.info1[self.info1_index, 1] == 3:
                 self.total_choices1 += 1
                 if self.info1[self.info1_index, 2] == 0:
                     self.left_choices1 += 1
-                    return 'Simulation', 'Left'
+                    self.all_info[0] = ('Simulation', 'Left')
                 elif self.info1[self.info1_index, 2] == 1:
                     self.center_choices1 += 1
-                    return 'Simulation', 'Center'
+                    self.all_info[0] = ('Simulation', 'Center')
                 elif self.info1[self.info1_index, 2] == 2:
                     self.right_choices1 += 1
-                    return 'Simulation', 'Right'
+                    self.all_info[0] = ('Simulation', 'Right')
 
             self.info1_index += 1
-    def get_info2(self, index):
-        if round(index / 128, 1) == round(self.info2[self.info2_index, 0] - self.start2, 1):
+
+        if round(index / 128, 1) == round(self.info2[self.info2_index, 0] - self.start2, 1) - 4:
             if self.info2[self.info2_index, 1] == 1:
-                return 'Planning', None
+                self.all_info[1] = ('Planning', '')
             elif self.info2[self.info2_index, 1] == 2:
-                return 'Measuring', None
+                self.all_info[1] = ('Measuring', '')
             elif self.info2[self.info2_index, 1] == 3:
                 self.total_choices2 += 1
                 if self.info2[self.info2_index, 2] == 0:
                     self.left_choices2 += 1
-                    return 'Simulation', 'Left'
+                    self.all_info[1] = ('Simulation', 'Left')
                 elif self.info2[self.info2_index, 2] == 1:
                     self.center_choices2 += 1
-                    return 'Simulation', 'Center'
+                    self.all_info[1] = ('Simulation', 'Center')
                 elif self.info2[self.info2_index, 2] == 2:
                     self.right_choices2 += 1
-                    return 'Simulation', 'Right'
+                    self.all_info[1] = ('Simulation', 'Right')
 
             self.info2_index += 1
 
@@ -167,15 +169,18 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
+        self.all_info = [('', ''), ('', '')]
+
 
         for index in range(self.matrix.shape[0]):
             self.get_data(index)
+            self.get_info(index)
             self.create_network(index, self.matrix[index],
                                 [self.mode1, self.mode2],
                                 [self.lives1, self.lives2],
                                 [self.action1, self.action2],
                                 [self.score1, self.score2],
-                                [(self.get_info1(index)), (self.get_info2(index))])
+                                self.all_info)
 
     def create_network(self, index, matrix, modes, lives, actions, scores, pinfo):
         # plot------------------------------
@@ -219,14 +224,14 @@ class Dynamicstonetwork:
 
         skew = 8
         # nodes
-        G = nx.Graph()
+        DG = nx.DiGraph()
         nodes_list = ['1-AF3', '1-F7', '1-F3', '1-FC5', '1-T7', '1-P7', '1-O1',
                       '1-O2', '1-P8', '1-T8', '1-FC6', '1-F4', '1-F8', '1-AF4',
                       '2-AF3', '2-F7', '2-F3', '2-FC5', '2-T7', '2-P7', '2-O1',
                       '2-O2', '2-P8', '2-T8', '2-FC6', '2-F4', '2-F8', '2-AF4',
                       ]
 
-        G.add_nodes_from(nodes_list)
+        DG.add_nodes_from(nodes_list)
         pos = {'1-AF3': [3.4, 4.8], '1-F7': [2.3, 4], '1-F3': [3.1, 4.3], '1-FC5': [2.4, 3.5], '1-T7': [2, 3], '1-P7': [2.3, 2],
                '1-O1': [3.4, 1.4], '1-O2': [4.6, 1.4], '1-P8': [5.7, 2], '1-T8': [6, 3], '1-FC6': [5.6, 3.5], '1-F4': [4.9, 4.3],
                '1-F8': [5.7, 4], '1-AF4': [4.6, 4.8],
@@ -238,19 +243,15 @@ class Dynamicstonetwork:
         norm = np.linalg.norm(m_to_norm)
         normalized = (m_to_norm) / norm
         # edges
-        for i in range(len(nodes_list)):
-            for j in range(len(nodes_list)):
-                if i < j:
-                    edge = [(nodes_list[i], nodes_list[j])]
-                    if matrix[i, j] > self.threshold:
-                        G.add_edges_from(edge)
-                        nx.draw_networkx_edges(G, pos=pos, edgelist=edge,
-                                               width=min(10, (10 * normalized[i, j])), edge_color='grey')
+        for de in range(len(nodes_list)):
+            for a in range(len(nodes_list)):
+                if matrix[a, de] > self.threshold:
+                    DG.add_edge(nodes_list[de], nodes_list[a], weight=(10 * normalized[a, de]))
 
         # hot nodes
         color_map = []
-        for node in G:
-            degree = G.degree(node)
+        for node in DG:
+            degree = DG.degree(node)
             if degree < 3:
                 color_map.append('yellow')
             elif 3 <= degree <= 6:
@@ -258,7 +259,7 @@ class Dynamicstonetwork:
             else:
                 color_map.append('r')
 
-        nx.draw(G, pos=pos, with_labels=True, node_color=color_map, edge_color='grey')
+        nx.draw_networkx(DG, pos=pos, with_labels=True, node_color=color_map, edge_color='grey')
 
         return plt
 
@@ -294,16 +295,19 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
+        self.all_info = [('', ''), ('', '')]
+
         for index in range(self.matrix.shape[0]):
             # print(ch_data.type)
             self.get_data(index)
+            self.get_info(index)
             if index % downsp == 0:
                 plt = self.create_network(index, self.matrix[index],
                                     [self.mode1, self.mode2],
                                     [self.lives1, self.lives2],
                                     [self.action1, self.action2],
                                     [self.score1, self.score2],
-                                    [(self.get_info1(index)), (self.get_info2(index))])
+                                    self.all_info)
                 pngname = f'{new_dir}\\Chuncks\\{str(index)}.png'
                 plt.savefig(pngname, format="PNG")
                 plt.close()
