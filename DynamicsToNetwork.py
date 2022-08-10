@@ -5,6 +5,7 @@ from matplotlib import patches
 import os
 import scipy.signal as sig
 import cv2
+from matplotlib.gridspec import GridSpec
 
 class Dynamicstonetwork:
     def __init__(self, matrix, stim1, stim2, info1, info2):
@@ -42,8 +43,8 @@ class Dynamicstonetwork:
         self.score2 = None
         self.times2 = 0
 
-        self.info1_index = 1
-        self.info2_index = 1
+        self.info1_index = 2
+        self.info2_index = 2
         self.total_choices1 = 0
         self.total_choices2 = 0
         self.right_choices1 = 0
@@ -53,7 +54,7 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
-        self.all_info = [['', '', '', '', ''], ['', '', '', '', '']]
+        self.all_info = [['', '', 0, 0, 0], ['', '', 0, 0, 0]]
 
     def get_data(self, index):
 
@@ -105,7 +106,7 @@ class Dynamicstonetwork:
 
     def get_info(self, index):
 
-        if round(index / 128, 1) == round(self.info1[self.info1_index, 0] - self.start1, 1) - 4:
+        if round(index / 128, 1) == round((self.info1[self.info1_index, 0] - self.start1) - 4, 1):
             if self.info1[self.info1_index, 1] == 1:
                 self.all_info[0][:2] = ['Planning', self.action_dict[self.info1[self.info1_index + 2, 2]]]
             elif self.info1[self.info1_index, 1] == 2:
@@ -124,11 +125,11 @@ class Dynamicstonetwork:
 
             self.info1_index += 1
 
-            self.all_info[0][2:5] = [str(round(self.left_choices1/self.total_choices1, 3)),
-                                     str(round(self.center_choices1/self.total_choices1, 3)),
-                                     str(round(self.right_choices1/self.total_choices1, 3))]
+            self.all_info[0][2:5] = [round(self.left_choices1/self.total_choices1, 3),
+                                     round(self.center_choices1/self.total_choices1, 3),
+                                     round(self.right_choices1/self.total_choices1, 3)]
 
-        if round(index / 128, 1) == round(self.info2[self.info2_index, 0] - self.start2, 1) - 4:
+        if round(index / 128, 1) == round((self.info2[self.info2_index, 0] - self.start2) - 4, 1):
             if self.info2[self.info2_index, 1] == 1:
                 self.all_info[1][:2] = ['Planning', self.action_dict[self.info2[self.info2_index + 2, 2]]]
             elif self.info2[self.info2_index, 1] == 2:
@@ -147,9 +148,9 @@ class Dynamicstonetwork:
 
             self.info2_index += 1
 
-            self.all_info[1][2:5] = [str(round(self.left_choices2 / self.total_choices2, 3)),
-                                     str(round(self.center_choices2 / self.total_choices2, 3)),
-                                     str(round(self.right_choices2 / self.total_choices2, 3))]
+            self.all_info[1][2:5] = [round(self.left_choices2 / self.total_choices2, 3),
+                                     round(self.center_choices2 / self.total_choices2, 3),
+                                     round(self.right_choices2 / self.total_choices2, 3)]
 
     def draw_networks(self):
         self.mode1 = ''
@@ -163,8 +164,8 @@ class Dynamicstonetwork:
         self.times1 = 0
         self.times2 = 0
 
-        self.info1_index = 0
-        self.info2_index = 0
+        self.info1_index = 2
+        self.info2_index = 2
         self.total_choices1 = 0
         self.total_choices2 = 0
         self.right_choices1 = 0
@@ -174,7 +175,7 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
-        self.all_info = [['', '', '', '', ''], ['', '', '', '', '']]
+        self.all_info = [['', '', 0, 0, 0], ['', '', 0, 0, 0]]
 
 
         for index in range(self.matrix.shape[0]):
@@ -189,8 +190,17 @@ class Dynamicstonetwork:
 
     def create_network(self, index, matrix, modes, lives, actions, scores, pinfo):
         # plot------------------------------
+        # create objects
         fig = plt.figure(figsize=(16, 9))
-        ax = plt.axes()
+        gs = GridSpec(5, 4, figure=fig)
+
+        # create sub plots as grid
+        ax1 = fig.add_subplot(gs[2:, :])
+        # ax2 = fig.add_subplot(gs[0, 0])
+        ax3 = fig.add_subplot(gs[0, 1])
+        # ax4 = fig.add_subplot(gs[0, 2])
+        ax5 = fig.add_subplot(gs[0, 3])
+
 
         for i in range(2):
             skew = 8 * i
@@ -199,34 +209,36 @@ class Dynamicstonetwork:
 
             # left ear
             circle = patches.Ellipse((skew + 2, 3), width=0.6, height=1.0, angle=0, edgecolor="k", facecolor="w", zorder=0)
-            ax.add_patch(circle)
+            ax1.add_patch(circle)
             # right ear
             circle = patches.Ellipse((skew + 6, 3), width=0.6, height=1.0, angle=0, edgecolor="k", facecolor="w", zorder=0)
-            ax.add_patch(circle)
+            ax1.add_patch(circle)
             # nose
             xy = [[skew + 3.6, 4.6], [skew + 4, 5.3], [skew + 4.4, 4.6]]
             polygon = patches.Polygon(xy=xy, edgecolor="k", facecolor="w", zorder=0)
-            ax.add_patch(polygon)
+            ax1.add_patch(polygon)
             # head
             head = patches.Circle(xy_center, radius=radius, edgecolor="k", facecolor="w", zorder=0)
-            ax.add_patch(head)
+            ax1.add_patch(head)
             # prevent squeeze
-            squeeze = patches.Circle((15.9, 8.9), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
-            ax.add_patch(squeeze)
-            squeeze = patches.Circle((0.1, 0.1), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
-            ax.add_patch(squeeze)
+            # squeeze = patches.Circle((15.9, 8.9), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
+            # ax1.add_patch(squeeze)
+            # squeeze = patches.Circle((0.1, 0.1), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
+            # ax1.add_patch(squeeze)
 
-            plt.text(1 + (8*i), 8.75, 'Frame: ' + str(index))
-            plt.text(1 + (8*i), 8.5, 'Phase: ' + modes[i])
-            plt.text(1 + (8*i), 8.25, 'Lives: ' + lives[i])
-            plt.text(1 + (8*i), 8, 'Input: ' + actions[i])
-            plt.text(1 + (8*i), 7.75, 'Score: ' + scores[i])
 
-            plt.text(1 + (8 * i), 7, 'Phase: ' + pinfo[i][0])
-            plt.text(1 + (8 * i), 6.75, 'Action: ' + pinfo[i][1])
-            plt.text(1 + (8 * i), 6.5, 'Left Ratio: ' + pinfo[i][2] +
-                                       ' Center Ratio: ' + pinfo[i][3] +
-                                       ' Roght Ratio: ' + pinfo[i][4])
+
+            ax1.text(1 + (8*i), 8.75, 'Frame: ' + str(index))
+            ax1.text(1 + (8*i), 8.5, 'Phase: ' + modes[i])
+            ax1.text(1 + (8*i), 8.25, 'Lives: ' + lives[i])
+            ax1.text(1 + (8*i), 8, 'Input: ' + actions[i])
+            ax1.text(1 + (8*i), 7.75, 'Score: ' + scores[i])
+
+            ax1.text(1 + (8 * i), 7.25, 'Phase: ' + pinfo[i][0])
+            ax1.text(1 + (8 * i), 7, 'Action: ' + pinfo[i][1])
+            ax1.text(1 + (8 * i), 6.75, 'Left Ratio: ' + str(pinfo[i][2]))
+            ax1.text(1 + (8 * i), 6.5, 'Center Ratio: ' + str(pinfo[i][3]))
+            ax1.text(1 + (8 * i), 6.25, 'Right Ratio: ' + str(pinfo[i][4]))
 
 
 
@@ -267,12 +279,26 @@ class Dynamicstonetwork:
             else:
                 color_map.append('r')
 
-        nx.draw_networkx(DG, pos=pos, with_labels=True, node_color=color_map, edge_color='grey')
-        plt.text(1, 6, 'Number of Edges: ' + str(DG.number_of_edges()))
-        plt.text(4, 6, 'Average Clustering: ' + str(round(nx.average_clustering(DG), 3)))
-        plt.text(7, 6, 'Transitivity: ' + str(round(nx.transitivity(DG), 3)))
+        nx.draw_networkx(DG, pos=pos, with_labels=True, node_color=color_map, edge_color='grey', ax=ax1)
+        ax1.text(1, 6, 'Number of Edges: ' + str(DG.number_of_edges()))
+        ax1.text(4, 6, 'Average Clustering: ' + str(round(nx.average_clustering(DG), 3)))
+        ax1.text(7, 6, 'Transitivity: ' + str(round(nx.transitivity(DG), 3)))
         # plt.text(10, 6, 'Eccentricity: ' + str(nx.eccentricity(DG)))
         # print(nx.clustering(DG))
+
+        ax3.set_title('Center Probability')
+        ax3.set_xlim(left=0, right=1)
+        ax3.set_ylim(bottom=0, top=1)
+        ax3.set_aspect('equal')
+        ax3.plot([pinfo[0][3]], [pinfo[1][3]], marker="o", markersize=5)
+        ax3.set(xlabel="Player 1", ylabel="Player 2")
+
+        ax5.set_title('Center Probability')
+        ax5.set_xlim(left=0, right=1)
+        ax5.set_ylim(bottom=0, top=1)
+        ax5.set_aspect('equal')
+        ax5.plot([pinfo[0][3]], [pinfo[1][3]], marker="o", markersize=5)
+        ax5.set(xlabel="Player 1", ylabel="Player 2")
 
         return plt
 
@@ -297,8 +323,8 @@ class Dynamicstonetwork:
         self.times1 = 0
         self.times2 = 0
 
-        self.info1_index = 0
-        self.info2_index = 0
+        self.info1_index = 2
+        self.info2_index = 2
         self.total_choices1 = 0
         self.total_choices2 = 0
         self.right_choices1 = 0
@@ -308,7 +334,7 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
-        self.all_info = [['', '', '', '', ''], ['', '', '', '', '']]
+        self.all_info = [['', '', 0, 0, 0], ['', '', 0, 0, 0]]
 
         for index in range(self.matrix.shape[0]):
             # print(ch_data.type)
