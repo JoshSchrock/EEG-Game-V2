@@ -53,7 +53,7 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
-        self.all_info = [('', ''), ('', '')]
+        self.all_info = [['', '', '', '', ''], ['', '', '', '', '']]
 
     def get_data(self, index):
 
@@ -73,7 +73,7 @@ class Dynamicstonetwork:
                 self.times1 = 1
 
         elif self.stim1[1, index] >= 25 and int(self.stim1[0, index]) == 1:
-            self.score1 = self.stim1[1, index] - 100
+            self.score1 = str(self.stim1[1, index] - 100)
 
         elif int(self.stim1[0, index]) == 0:
             pass
@@ -96,7 +96,7 @@ class Dynamicstonetwork:
                 self.times2 = 1
 
         elif self.stim2[1, index] >= 25 and int(self.stim2[0, index]) == 1:
-            self.score2 = self.stim2[1, index] - 100
+            self.score2 = str(self.stim2[1, index] - 100)
 
         elif int(self.stim2[0, index]) == 0:
             pass
@@ -107,51 +107,59 @@ class Dynamicstonetwork:
 
         if round(index / 128, 1) == round(self.info1[self.info1_index, 0] - self.start1, 1) - 4:
             if self.info1[self.info1_index, 1] == 1:
-                self.all_info[0] = ('Planning', self.action_dict[self.info1[self.info1_index + 2, 2]])
+                self.all_info[0][:2] = ['Planning', self.action_dict[self.info1[self.info1_index + 2, 2]]]
             elif self.info1[self.info1_index, 1] == 2:
-                self.all_info[0] = ('Measuring', self.action_dict[self.info1[self.info1_index + 1, 2]])
+                self.all_info[0][:2] = ['Measuring', self.action_dict[self.info1[self.info1_index + 1, 2]]]
             elif self.info1[self.info1_index, 1] == 3:
                 self.total_choices1 += 1
                 if self.info1[self.info1_index, 2] == 0:
                     self.left_choices1 += 1
-                    self.all_info[0] = ('Simulation', 'Left')
+                    self.all_info[0][:2] = ['Simulation', 'Left']
                 elif self.info1[self.info1_index, 2] == 1:
                     self.center_choices1 += 1
-                    self.all_info[0] = ('Simulation', 'Center')
+                    self.all_info[0][:2] = ['Simulation', 'Center']
                 elif self.info1[self.info1_index, 2] == 2:
                     self.right_choices1 += 1
-                    self.all_info[0] = ('Simulation', 'Right')
+                    self.all_info[0][:2] = ['Simulation', 'Right']
 
             self.info1_index += 1
 
+            self.all_info[0][2:5] = [str(round(self.left_choices1/self.total_choices1, 3)),
+                                     str(round(self.center_choices1/self.total_choices1, 3)),
+                                     str(round(self.right_choices1/self.total_choices1, 3))]
+
         if round(index / 128, 1) == round(self.info2[self.info2_index, 0] - self.start2, 1) - 4:
             if self.info2[self.info2_index, 1] == 1:
-                self.all_info[1] = ('Planning', self.action_dict[self.info2[self.info2_index + 2, 2]])
+                self.all_info[1][:2] = ['Planning', self.action_dict[self.info2[self.info2_index + 2, 2]]]
             elif self.info2[self.info2_index, 1] == 2:
-                self.all_info[1] = ('Measuring', self.action_dict[self.info2[self.info2_index + 1, 2]])
+                self.all_info[1][:2] = ['Measuring', self.action_dict[self.info2[self.info2_index + 1, 2]]]
             elif self.info2[self.info2_index, 1] == 3:
                 self.total_choices2 += 1
                 if self.info2[self.info2_index, 2] == 0:
                     self.left_choices2 += 1
-                    self.all_info[1] = ('Simulation', 'Left')
+                    self.all_info[1][:2] = ['Simulation', 'Left']
                 elif self.info2[self.info2_index, 2] == 1:
                     self.center_choices2 += 1
-                    self.all_info[1] = ('Simulation', 'Center')
+                    self.all_info[1][:2] = ['Simulation', 'Center']
                 elif self.info2[self.info2_index, 2] == 2:
                     self.right_choices2 += 1
-                    self.all_info[1] = ('Simulation', 'Right')
+                    self.all_info[1][:2] = ['Simulation', 'Right']
 
             self.info2_index += 1
 
+            self.all_info[1][2:5] = [str(round(self.left_choices2 / self.total_choices2, 3)),
+                                     str(round(self.center_choices2 / self.total_choices2, 3)),
+                                     str(round(self.right_choices2 / self.total_choices2, 3))]
+
     def draw_networks(self):
-        self.mode1 = None
-        self.mode2 = None
-        self.lives1 = None
-        self.lives2 = None
-        self.action1 = None
-        self.action2 = None
-        self.score1 = None
-        self.score2 = None
+        self.mode1 = ''
+        self.mode2 = ''
+        self.lives1 = ''
+        self.lives2 = ''
+        self.action1 = ''
+        self.action2 = ''
+        self.score1 = ''
+        self.score2 = ''
         self.times1 = 0
         self.times2 = 0
 
@@ -166,7 +174,7 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
-        self.all_info = [('', ''), ('', '')]
+        self.all_info = [['', '', '', '', ''], ['', '', '', '', '']]
 
 
         for index in range(self.matrix.shape[0]):
@@ -215,7 +223,10 @@ class Dynamicstonetwork:
             plt.text(1 + (8*i), 7.75, 'Score: ' + scores[i])
 
             plt.text(1 + (8 * i), 7, 'Phase: ' + pinfo[i][0])
-            plt.text(1 + (8 * i), 6.5, 'Action: ' + pinfo[i][1])
+            plt.text(1 + (8 * i), 6.75, 'Action: ' + pinfo[i][1])
+            plt.text(1 + (8 * i), 6.5, 'Left Ratio: ' + pinfo[i][2] +
+                                       ' Center Ratio: ' + pinfo[i][3] +
+                                       ' Roght Ratio: ' + pinfo[i][4])
 
 
 
@@ -257,10 +268,10 @@ class Dynamicstonetwork:
                 color_map.append('r')
 
         nx.draw_networkx(DG, pos=pos, with_labels=True, node_color=color_map, edge_color='grey')
-        plt.text(1, 6, 'Average Clustering: ' + str(DG.number_of_edges()))
-        plt.text(4, 6, 'Average Clustering: ' + str(nx.average_clustering(DG)))
-        plt.text(7, 6, 'Transitivity: ' + str(nx.transitivity(DG)))
-        plt.text(10, 6, 'Eccentricity: ' + str(nx.eccentricity(DG)))
+        plt.text(1, 6, 'Number of Edges: ' + str(DG.number_of_edges()))
+        plt.text(4, 6, 'Average Clustering: ' + str(round(nx.average_clustering(DG), 3)))
+        plt.text(7, 6, 'Transitivity: ' + str(round(nx.transitivity(DG), 3)))
+        # plt.text(10, 6, 'Eccentricity: ' + str(nx.eccentricity(DG)))
         # print(nx.clustering(DG))
 
         return plt
@@ -275,14 +286,14 @@ class Dynamicstonetwork:
             if not os.path.exists(f'{new_dir}\\Chuncks'):
                 os.makedirs(f'{new_dir}\\Chuncks')
 
-        self.mode1 = None
-        self.mode2 = None
-        self.lives1 = None
-        self.lives2 = None
-        self.action1 = None
-        self.action2 = None
-        self.score1 = None
-        self.score2 = None
+        self.mode1 = ''
+        self.mode2 = ''
+        self.lives1 = ''
+        self.lives2 = ''
+        self.action1 = ''
+        self.action2 = ''
+        self.score1 = ''
+        self.score2 = ''
         self.times1 = 0
         self.times2 = 0
 
@@ -297,7 +308,7 @@ class Dynamicstonetwork:
         self.center_choices1 = 0
         self.center_choices2 = 0
 
-        self.all_info = [('', ''), ('', '')]
+        self.all_info = [['', '', '', '', ''], ['', '', '', '', '']]
 
         for index in range(self.matrix.shape[0]):
             # print(ch_data.type)
