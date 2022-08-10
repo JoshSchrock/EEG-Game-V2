@@ -27,6 +27,10 @@ class Dynamicstonetwork:
                       22: '2',
                       23: '3'}
 
+        self.action_dict = {0: 'Left',
+                            1: 'Center',
+                            2: 'Right'}
+
         self.mode1 = None
         self.mode2 = None
         self.lives1 = None
@@ -38,8 +42,8 @@ class Dynamicstonetwork:
         self.score2 = None
         self.times2 = 0
 
-        self.info1_index = 0
-        self.info2_index = 0
+        self.info1_index = 1
+        self.info2_index = 1
         self.total_choices1 = 0
         self.total_choices2 = 0
         self.right_choices1 = 0
@@ -74,11 +78,7 @@ class Dynamicstonetwork:
         elif int(self.stim1[0, index]) == 0:
             pass
 
-        else:
-            self.mode1 = 'ERROR'
-            self.lives1 = 'ERROR'
-            self.action1 = 'ERROR'
-            self.score1 = 'ERROR'
+
 
         if 1 <= self.stim2[1, index] <= 3 and int(self.stim2[0, index]) == 1:
             self.mode2 = self.actiondict[self.stim2[1, index]]
@@ -101,18 +101,15 @@ class Dynamicstonetwork:
         elif int(self.stim2[0, index]) == 0:
             pass
 
-        else:
-            self.mode2 = 'ERROR'
-            self.lives2 = 'ERROR'
-            self.action2 = 'ERROR'
-            self.score2 = 'ERROR'
+
 
     def get_info(self, index):
+
         if round(index / 128, 1) == round(self.info1[self.info1_index, 0] - self.start1, 1) - 4:
             if self.info1[self.info1_index, 1] == 1:
-                self.all_info[0] = ('Planning', '')
+                self.all_info[0] = ('Planning', self.action_dict[self.info1[self.info1_index + 2, 2]])
             elif self.info1[self.info1_index, 1] == 2:
-                self.all_info[0] = ('Measuring', '')
+                self.all_info[0] = ('Measuring', self.action_dict[self.info1[self.info1_index + 1, 2]])
             elif self.info1[self.info1_index, 1] == 3:
                 self.total_choices1 += 1
                 if self.info1[self.info1_index, 2] == 0:
@@ -129,9 +126,9 @@ class Dynamicstonetwork:
 
         if round(index / 128, 1) == round(self.info2[self.info2_index, 0] - self.start2, 1) - 4:
             if self.info2[self.info2_index, 1] == 1:
-                self.all_info[1] = ('Planning', '')
+                self.all_info[1] = ('Planning', self.action_dict[self.info2[self.info2_index + 2, 2]])
             elif self.info2[self.info2_index, 1] == 2:
-                self.all_info[1] = ('Measuring', '')
+                self.all_info[1] = ('Measuring', self.action_dict[self.info2[self.info2_index + 1, 2]])
             elif self.info2[self.info2_index, 1] == 3:
                 self.total_choices2 += 1
                 if self.info2[self.info2_index, 2] == 0:
@@ -211,14 +208,14 @@ class Dynamicstonetwork:
             squeeze = patches.Circle((0.1, 0.1), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
             ax.add_patch(squeeze)
 
-            plt.text(1 + (8*i), 9, str(index))
-            plt.text(1 + (8*i), 8.5, modes[i])
-            plt.text(1 + (8*i), 8, lives[i])
-            plt.text(1 + (8*i), 7.5, actions[i])
-            plt.text(1 + (8*i), 7, scores[i])
+            plt.text(1 + (8*i), 8.75, 'Frame: ' + str(index))
+            plt.text(1 + (8*i), 8.5, 'Phase: ' + modes[i])
+            plt.text(1 + (8*i), 8.25, 'Lives: ' + lives[i])
+            plt.text(1 + (8*i), 8, 'Input: ' + actions[i])
+            plt.text(1 + (8*i), 7.75, 'Score: ' + scores[i])
 
-            plt.text(2.5 + (8 * i), 9, pinfo[i][0])
-            plt.text(2.5 + (8 * i), 8.5, pinfo[i][1])
+            plt.text(1 + (8 * i), 7, 'Phase: ' + pinfo[i][0])
+            plt.text(1 + (8 * i), 6.5, 'Action: ' + pinfo[i][1])
 
 
 
@@ -260,6 +257,11 @@ class Dynamicstonetwork:
                 color_map.append('r')
 
         nx.draw_networkx(DG, pos=pos, with_labels=True, node_color=color_map, edge_color='grey')
+        plt.text(1, 6, 'Average Clustering: ' + str(DG.number_of_edges()))
+        plt.text(4, 6, 'Average Clustering: ' + str(nx.average_clustering(DG)))
+        plt.text(7, 6, 'Transitivity: ' + str(nx.transitivity(DG)))
+        plt.text(10, 6, 'Eccentricity: ' + str(nx.eccentricity(DG)))
+        # print(nx.clustering(DG))
 
         return plt
 
