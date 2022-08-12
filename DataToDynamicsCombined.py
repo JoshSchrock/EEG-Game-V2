@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Datatodynamicscombined:
+    """A class that enables a variety of DMD methods from two datasets"""
     def __init__(self, dataset1, dataset2, s0, s1, samplefreq=128, aug=True):
         self.aug = aug
         self.X1 = dataset1[:, (s0):(s1)]
@@ -21,6 +22,7 @@ class Datatodynamicscombined:
 
 
     def prepare_matrix(self, X):
+        # method fpr augmenting the matrix
         # Set up DMD - reference https://www.sciencedirect.com/science/article/pii/S0165027015003829
 
         h = ((2 * X.shape[1]) // X.shape[0]) + 1
@@ -31,6 +33,7 @@ class Datatodynamicscombined:
         return Xaug
 
     def combine_data(self, X1, X2):
+        # method for stacking multiple datasets
         return np.concatenate((X1, X2), axis=0)
 
     def DMD(self, energy=False, plot=False, aspect=1):
@@ -66,6 +69,7 @@ class Datatodynamicscombined:
 
 
     def reconstruct(self, plot=False, aspect=1):
+        # reconstructing the original data using dmd values
         z = np.linalg.lstsq(self.modes, self.Xaug[:, 0], rcond=None,)[0]
         reconstruction = self.modes.dot(z)
         for i in range(1, self.Xaugp.shape[1]):
@@ -80,6 +84,7 @@ class Datatodynamicscombined:
         return reconstruction
 
     def reconstructalt(self, plot=False, aspect=1):
+        # reconstructring original data for the non SVD method of DMD
         reconstruction = np.matmul(self.A, self.Xaug)
 
         if plot:
@@ -91,6 +96,7 @@ class Datatodynamicscombined:
         return reconstruction
 
     def DMDalt(self, plot=False, aspect=1):
+        # Non-SVD method of DMD
         self.A = numpy.matmul(self.Xaugp, np.linalg.pinv(self.Xaug))
 
         if plot:
@@ -98,6 +104,7 @@ class Datatodynamicscombined:
             self.plot(np.angle(self.A), aspect=aspect, figsize=(20, 16), title='A Matrix (Ang)', halfticks=True, cmap='hsv')
 
     def plot(self, matrix, aspect=1, figsize=(20, 16), title='', cmap='inferno', halfticks=None, clim=()):
+        # simple plotting method
         color_lims = np.percentile(matrix, [5, 95])
         if len(clim) > 0:
             color_lims = clim

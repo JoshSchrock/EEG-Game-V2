@@ -108,9 +108,15 @@ class Dynamicstonetwork:
 
         if round(index / 128, 1) == round((self.info1[self.info1_index, 0] - self.start1) - 4, 1):
             if self.info1[self.info1_index, 1] == 1:
-                self.all_info[0][:2] = ['Planning', self.action_dict[self.info1[self.info1_index + 2, 2]]]
+                if self.info1_index + 2 < len(self.info1):
+                    self.all_info[0][:2] = ['Planning', self.action_dict[self.info1[self.info1_index + 2, 2]]]
+                else:
+                    self.all_info[0][:2] = ['Planning', '']
             elif self.info1[self.info1_index, 1] == 2:
-                self.all_info[0][:2] = ['Measuring', self.action_dict[self.info1[self.info1_index + 1, 2]]]
+                if self.info1_index + 1 < len(self.info1):
+                    self.all_info[0][:2] = ['Measuring', self.action_dict[self.info1[self.info1_index + 1, 2]]]
+                else:
+                    self.all_info[0][:2] = ['Measuring', '']
             elif self.info1[self.info1_index, 1] == 3:
                 self.total_choices1 += 1
                 if self.info1[self.info1_index, 2] == 0:
@@ -131,9 +137,15 @@ class Dynamicstonetwork:
 
         if round(index / 128, 1) == round((self.info2[self.info2_index, 0] - self.start2) - 4, 1):
             if self.info2[self.info2_index, 1] == 1:
-                self.all_info[1][:2] = ['Planning', self.action_dict[self.info2[self.info2_index + 2, 2]]]
+                if self.info2_index + 2 < len(self.info2):
+                    self.all_info[1][:2] = ['Planning', self.action_dict[self.info2[self.info2_index + 2, 2]]]
+                else:
+                    self.all_info[1][:2] = ['Planning', '']
             elif self.info2[self.info2_index, 1] == 2:
-                self.all_info[1][:2] = ['Measuring', self.action_dict[self.info2[self.info2_index + 1, 2]]]
+                if self.info2_index + 1 < len(self.info2):
+                    self.all_info[1][:2] = ['Measuring', self.action_dict[self.info2[self.info2_index + 1, 2]]]
+                else:
+                    self.all_info[1][:2] = ['Measuring', '']
             elif self.info2[self.info2_index, 1] == 3:
                 self.total_choices2 += 1
                 if self.info2[self.info2_index, 2] == 0:
@@ -221,10 +233,10 @@ class Dynamicstonetwork:
             head = patches.Circle(xy_center, radius=radius, edgecolor="k", facecolor="w", zorder=0)
             ax1.add_patch(head)
             # prevent squeeze
-            # squeeze = patches.Circle((15.9, 8.9), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
-            # ax1.add_patch(squeeze)
-            # squeeze = patches.Circle((0.1, 0.1), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
-            # ax1.add_patch(squeeze)
+            squeeze = patches.Circle((15.9, 5.3), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
+            ax1.add_patch(squeeze)
+            squeeze = patches.Circle((0.1, 0.1), radius=0.1, edgecolor="k", facecolor="w", zorder=0)
+            ax1.add_patch(squeeze)
 
 
 
@@ -239,6 +251,7 @@ class Dynamicstonetwork:
             ax1.text(1 + (8 * i), 6.75, 'Left Ratio: ' + str(pinfo[i][2]))
             ax1.text(1 + (8 * i), 6.5, 'Center Ratio: ' + str(pinfo[i][3]))
             ax1.text(1 + (8 * i), 6.25, 'Right Ratio: ' + str(pinfo[i][4]))
+            ax1.axis('equal')
 
 
 
@@ -348,7 +361,7 @@ class Dynamicstonetwork:
                                     [self.score1, self.score2],
                                     self.all_info)
                 pngname = f'{new_dir}\\Chuncks\\{str(index)}.png'
-                plt.savefig(pngname, format="PNG")
+                plt.savefig(pngname, format="PNG", dpi=300)
                 plt.close()
 
         # from PIL import Image

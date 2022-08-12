@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 class Dynamicstodata:
+    """A class that takes dynamics matricies from DMD (One of modes and the other a diagonal matrix of eigenvalues)
+    and represents them in many ways"""
     def __init__(self, modes, dynamics, freq=128):
         self.modes = modes
         self.dynamics = dynamics
@@ -28,6 +30,7 @@ class Dynamicstodata:
         self.score2 = None
 
     def calc_powers(self):
+        # calculates powers of modes - reference https://www.sciencedirect.com/science/article/pii/S0165027015003829
         temp = []
         for i in range(self.modes.shape[1]):
             temp.append((np.linalg.norm(self.modes[:, i]) ** 2))
@@ -35,11 +38,13 @@ class Dynamicstodata:
         self.powers = np.array(temp)
 
     def calc_frequencies(self):
+        # calculates frequencies of modes - reference https://www.sciencedirect.com/science/article/pii/S0165027015003829
         dynamics = np.diagonal(self.dynamics)
         ws = np.log(dynamics) * self.freq
         self.frequencies = np.absolute((ws.imag / (2*np.pi)))
 
     def plot_eigs(self, show=True):
+        # plots eigenvalues of modes on a unit circle
         if not self.powers:
             self.calc_powers()
 
@@ -71,6 +76,7 @@ class Dynamicstodata:
         return plt
 
     def plot_spectrum(self, show=True):
+        # plots the dmd spectrum of mode powers based on their dynamics (similar to FFT)
         if self.frequencies is None:
             self.calc_frequencies()
 
@@ -97,6 +103,7 @@ class Dynamicstodata:
         return plt
 
     def plot_modes(self, freqlow, freqhigh, number=None, rows=2, show=True, arr='power'):
+        # plots dmd modes in a freuqncy range, can sort by power of frequency, cal limit number to be displayed
         if self.frequencies is None:
             self.calc_frequencies()
 
@@ -172,6 +179,7 @@ class Dynamicstodata:
         return plots
 
     def find_mode_avg(self, freqlow, freqhigh, number=None, arr='power'):
+        # finds the average of dmd modes in a certain frequency range, can arrange and limit inclusion by top frequency or power
         if self.frequencies is None:
             self.calc_frequencies()
 
@@ -216,6 +224,7 @@ class Dynamicstodata:
         return avgfreq, avgpower, avgmodesabs, avgmodesangles
 
     def plot_mode_avg(self, freqlow, freqhigh, number=None, rows=2, arr='power', climp=(), clima=()):
+        # plots the results from self.find_mode_avg
         avgfreq, avgpower, avgmodesabs, avgmodesangles = self.find_mode_avg(freqlow, freqhigh, number, arr)
 
         plots = []

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 
 class Datatodynamicssingle:
+    """A class that enables a variety of DMD methods from one dataset"""
     def __init__(self, dataset, s0, s1, samplefreq=128, aug=True):
         self.aug = aug
         self.X1 = dataset[:, (s0):(s1)]
@@ -19,6 +20,7 @@ class Datatodynamicssingle:
 
 
     def prepare_matrix(self, X):
+        # method fpr augmenting the matrix
         # Set up DMD - reference https://www.sciencedirect.com/science/article/pii/S0165027015003829
 
         h = ((2 * X.shape[1]) // X.shape[0]) + 1
@@ -61,6 +63,7 @@ class Datatodynamicssingle:
 
 
     def reconstruct(self, plot=False, aspect=1):
+        # reconstructing the original data using dmd values
         z = np.linalg.lstsq(self.modes, self.Xaug[:, 0], rcond=None,)[0]
         reconstruction = self.modes.dot(z)
         for i in range(1, self.Xaugp.shape[1]):
@@ -75,6 +78,7 @@ class Datatodynamicssingle:
         return reconstruction
 
     def DMDalt(self, plot=False, aspect=1):
+        # reconstructring original data for the non SVD method of DMD
         self.A = numpy.matmul(self.Xaugp, np.linalg.pinv(self.Xaug))
 
         if plot:
@@ -82,6 +86,7 @@ class Datatodynamicssingle:
             self.plot(np.angle(self.A), aspect=aspect, figsize=(20, 16), title='A Matrix (Ang)', halfticks=True, cmap='hsv')
 
     def plot(self, matrix, aspect=1, figsize=(20, 16), title='', cmap='inferno', halfticks=None, clim=()):
+        # simple plotting method
         color_lims = np.percentile(matrix, [5, 95])
         if len(clim) > 0:
             color_lims = clim

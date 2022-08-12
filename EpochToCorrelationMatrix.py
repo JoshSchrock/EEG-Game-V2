@@ -9,6 +9,7 @@ import os
 import scipy.signal as sig
 
 class EpochsToCorrelation:
+    """ A simple class to enable a graphic representation of brain signal correlations"""
     def __init__(self, epochs, freq='all', method='pearson', threshold=None):
         self.corr_matrix = None
         self.threshold = threshold
@@ -40,6 +41,7 @@ class EpochsToCorrelation:
         print(np.array(self.corr_matrix))
 
     def envelope(self):
+        # envelope correlation
         corr_matrix = mne_connectivity.envelope_correlation(self.epoch_data).get_data()
         new_corr_matrix = []
         for matrix in corr_matrix:
@@ -56,6 +58,7 @@ class EpochsToCorrelation:
             self.threshold = np.nanquantile(self.corr_matrix, 0.8)
 
     def pearson(self):
+        # pearson correlation
         self.corr_matrix = []
         for epoch in self.epoch_data:
             cur_array = np.array(epoch)
@@ -66,6 +69,7 @@ class EpochsToCorrelation:
             self.threshold = np.nanquantile(self.corr_matrix, 0.8)
 
     def plv(self):
+        # phase locking value correlation
         self.corr_matrix = []
         for epoch in self.epoch_data:
             cur_array = np.array(epoch)
@@ -86,6 +90,7 @@ class EpochsToCorrelation:
 
 
     def show_figures(self, plot_matrix=True, draw_network=True):
+        # display figures created
         if plot_matrix and not draw_network:
             for index, matrix in enumerate(self.corr_matrix):
                 self.plot(index, matrix)
@@ -98,6 +103,7 @@ class EpochsToCorrelation:
                 self.draw_network(index, matrix)
 
     def plot(self, index, matrix):
+        # simple plot methos
         color_lims = np.percentile(np.array(matrix), [5, 95])
         f = plt.figure(figsize=(4, 3))
         plt.matshow(matrix, fignum=f.number, clim=color_lims)
@@ -106,6 +112,7 @@ class EpochsToCorrelation:
         plt.title(f'{self.method} correlation matrix {str(index)}')
 
     def draw_network(self, index, matrix):
+        # plot the brain network connectivity representation
         # plot------------------------------
         fig, ax = plt.subplots(figsize=(8, 8))
         xy_center = [2, 2]
@@ -159,6 +166,7 @@ class EpochsToCorrelation:
         return plt
 
     def export(self, export_name):
+        # export the brain network representations
         # make dir
         new_dir = f'{os.getcwd()}\\EEGNetExports\\{export_name}\\{self.method}\\{self.freq}'
         if not os.path.exists(new_dir):
